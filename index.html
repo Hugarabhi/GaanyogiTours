@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GAANYOGI | Tours and Travels</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Custom Color Palette */
+        :root {
+            --electric-blue: #00a8e8;
+            --tea-green: #d4e09b;
+            --cream: #fdf7ec;
+            --sunset: #ff6b6b;
+            --melon: #ff9a8b;
+            --midnight: #1a1a2e;
+            --slate: #394867;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--midnight);
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Smooth scrolling for the whole page */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Custom animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--electric-blue) 0%, var(--tea-green) 100%);
+        }
+
+        .gradient-sunset {
+            background: linear-gradient(135deg, var(--sunset) 0%, var(--melon) 100%);
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile tap targets */
+        .mobile-tap {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 168, 232, 0.1);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--electric-blue);
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--slate);
+        }
+
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(0, 168, 232, 0.2);
+            border-radius: 50%;
+            border-top: 3px solid var(--electric-blue);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        /* Text truncation */
+        .line-clamp-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        /* Logo styling */
+        .logo-img {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Table styling */
+        .price-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .price-table th {
+            background: linear-gradient(135deg, var(--electric-blue) 0%, var(--tea-green) 100%);
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        .price-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(0, 168, 232, 0.1);
+            font-size: 0.875rem;
+        }
+        
+        .price-table tr:hover {
+            background-color: rgba(0, 168, 232, 0.03);
+        }
+        
+        .price-table .highlight {
+            background-color: rgba(212, 224, 155, 0.15);
+            font-weight: 600;
+        }
+
+        /* Language specific */
+        .lang-kannada {
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        .lang-hindi {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Manrope', 'sans-serif'], 
+                        serif: ['Playfair Display', 'serif'] 
+                    },
+                    colors: {
+                        'electric': '#00a8e8',
+                        'teagreen': '#d4e09b',
+                        'cream': '#fdf7ec',
+                        'sunset': '#ff6b6b',
+                        'melon': '#ff9a8b',
+                        'midnight': '#1a1a2e',
+                        'slate': '#394867'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-in': 'slideIn 0.5s ease-out',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="glass sticky top-0 z-50 shadow-sm animate-fade-in">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                     alt="GAANYOGI Logo" 
+                     class="logo-img w-12 h-12 object-contain">
+                <div>
+                    <h1 class="text-xl font-serif font-bold tracking-widest text-midnight">GAANYOGI</h1>
+                    <p id="nav-subtitle" class="text-[10px] text-electric font-bold uppercase tracking-[0.2em]">Tours and Travels</p>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6">
+                <div class="relative group">
+                    <button id="language-dropdown-btn" class="flex items-center gap-2 text-sm font-semibold text-slate hover:text-electric transition py-2 px-3 rounded-lg hover:bg-electric/10">
+                        <i class="fa-solid fa-language"></i>
+                        <span id="current-language">English</span>
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </button>
+                    <div class="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-electric/20 hidden group-hover:block animate-fade-in z-50">
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                            <span class="w-6 text-center">🇺🇸</span> English
+                        </button>
+                        <button onclick="changeLanguage('kn')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                            <span class="w-6 text-center">🇮🇳</span> ಕನ್ನಡ
+                        </button>
+                        <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                            <span class="w-6 text-center">🇮🇳</span> हिंदी
+                        </button>
+                    </div>
+                </div>
+                
+                <button onclick="router.navigate('home')" id="nav-home" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Home</button>
+                <button onclick="router.navigate('tours')" id="nav-tours" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Luxury Tours</button>
+                <button onclick="router.navigate('rides')" id="nav-rides" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Book Ride</button>
+                <button onclick="router.navigate('admin')" id="nav-admin" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Admin</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div id="user-status" class="hidden md:block text-xs text-electric font-bold bg-electric/10 px-3 py-1 rounded-full">
+                    <i class="fa-solid fa-user mr-1"></i> <span id="user-guest">Guest</span>
+                </div>
+                <button onclick="router.navigate('rides')" class="hidden md:block gradient-sunset text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-90 transition shadow-lg mobile-tap">
+                    <i class="fa-solid fa-car-side mr-2"></i><span id="nav-book-ride">Book Ride</span>
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden text-midnight text-xl p-2 mobile-tap">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-gray-100 p-5 flex flex-col gap-4 animate-slide-in">
+            <div class="flex gap-2 mb-2">
+                <button onclick="changeLanguage('en'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                    English
+                </button>
+                <button onclick="changeLanguage('kn'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                    ಕನ್ನಡ
+                </button>
+                <button onclick="changeLanguage('hi'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                    हिंदी
+                </button>
+            </div>
+             <button onclick="router.navigate('home'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+                <i class="fa-solid fa-home mr-3 text-electric"></i><span id="mobile-home">Home</span>
+             </button>
+             <button onclick="router.navigate('tours'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+                <i class="fa-solid fa-map-marked-alt mr-3 text-sunset"></i><span id="mobile-tours">Luxury Tours</span>
+             </button>
+             <button onclick="router.navigate('rides'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+                <i class="fa-solid fa-car mr-3 text-melon"></i><span id="mobile-rides">Book Ride</span>
+             </button>
+             <button onclick="router.navigate('admin'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+                <i class="fa-solid fa-lock mr-3 text-slate"></i><span id="mobile-admin">Admin</span>
+             </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-root" class="flex-grow"></main>
+
+    <!-- Footer -->
+    <footer class="bg-midnight text-white py-10 mt-20">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                         alt="GAANYOGI Logo" 
+                         class="logo-img w-10 h-10 object-contain">
+                    <h3 class="font-serif text-xl font-bold text-teagreen">GAANYOGI</h3>
+                </div>
+                <p id="footer-tagline" class="text-gray-300 text-sm leading-relaxed">Comfort • Safety • Reliable Journeys</p>
+            </div>
+            <div>
+                <h3 id="footer-desk" class="font-serif text-lg font-bold mb-4 text-white">Concierge Desk</h3>
+                <p class="text-gray-300 text-sm mb-3 flex items-center">
+                    <i class="fa-brands fa-whatsapp mr-3 text-teagreen"></i>+91 7743805933
+                </p>
+                <p class="text-gray-300 text-sm flex items-center">
+                    <i class="fa-solid fa-envelope mr-3 text-teagreen"></i>gaanyogitours@gmail.com
+                </p>
+            </div>
+            <div>
+                <h3 id="footer-connect" class="font-serif text-lg font-bold mb-4 text-white">Connect</h3>
+                <div class="flex gap-4 text-xl">
+                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div id="footer-copyright" class="text-center text-gray-500 text-[10px] uppercase tracking-widest mt-8 border-t border-white/10 pt-6">
+            &copy; 2026 GAANYOGI | Tours and Travels | All rights reserved by abhiwebdesign.great-site.net
+        </div>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <div class="fixed bottom-4 right-4 z-50 animate-fade-in">
+        <div id="chat-window" class="hidden bg-white w-full max-w-sm h-[400px] rounded-2xl shadow-2xl flex flex-col mb-4 border border-electric/20 hide-scrollbar">
+            <div class="gradient-bg p-4 text-white flex justify-between items-center rounded-t-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white border border-white/30">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-sm font-serif" id="chat-title">gaanYogi AI</p>
+                        <p class="text-[10px] opacity-90 uppercase" id="chat-subtitle">Travel Concierge</p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition mobile-tap">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-cream text-sm space-y-3 custom-scrollbar hide-scrollbar">
+                <div class="flex justify-start animate-slide-in">
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-electric/20 max-w-[85%] text-midnight shadow-sm">
+                        <span id="chat-welcome">Namaste! I am gaanYogi, your AI travel concierge. How can I assist with your journey today?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 bg-white border-t border-electric/10 flex gap-2 rounded-b-2xl">
+                <input type="text" id="chat-input" placeholder="Ask about tours, rides, or destinations..." 
+                       class="flex-1 bg-cream border border-electric/20 rounded-xl px-4 py-2 text-sm text-midnight focus:outline-none focus:ring-2 focus:ring-electric focus:border-transparent">
+                <button onclick="handleChatSend()" class="bg-electric text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-electric/90 transition shadow mobile-tap">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <button onclick="toggleChat()" class="gradient-sunset text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform shadow-lg mobile-tap animate-float">
+            <i class="fa-solid fa-comment-dots text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-[70] flex flex-col gap-3 w-auto max-w-[300px] pointer-events-none"></div>
+
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+
+    <!-- External Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3OCCZJIEL1cjeMfM5A7aZ-4Eh-1DWiIg",
+            authDomain: "gaanyogitours.firebaseapp.com",
+            projectId: "gaanyogitours",
+            storageBucket: "gaanyogitours.firebasestorage.app",
+            messagingSenderId: "884166466732",
+            appId: "1:884166466732:web:f09efbb5c3ab937f371309"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Language Data
+        const translations = {
+            en: {
+                // Navigation
+                'nav-subtitle': 'Tours and Travels',
+                'nav-home': 'Home',
+                'nav-tours': 'Luxury Tours',
+                'nav-rides': 'Book Ride',
+                'nav-admin': 'Admin',
+                'nav-book-ride': 'Book Ride',
+                'user-guest': 'Guest',
+                'current-language': 'English',
+                
+                // Mobile Menu
+                'mobile-home': 'Home',
+                'mobile-tours': 'Luxury Tours',
+                'mobile-rides': 'Book Ride',
+                'mobile-admin': 'Admin',
+                
+                // Footer
+                'footer-tagline': 'Comfort • Safety • Reliable Journeys',
+                'footer-desk': 'Concierge Desk',
+                'footer-connect': 'Connect',
+                'footer-copyright': '© 2026 GAANYOGI | Tours and Travels | All rights reserved by abhiwebdesign.great-site.net',
+                
+                // Chat
+                'chat-title': 'gaanYogi AI',
+                'chat-subtitle': 'Travel Concierge',
+                'chat-welcome': 'Namaste! I am gaanYogi, your AI travel concierge. How can I assist with your journey today?',
+                'chat-placeholder': 'Ask about tours, rides, or destinations...',
+                
+                // Home Page
+                'hero-subtitle': 'Premium Travel Services',
+                'hero-title-1': 'Elevate Your',
+                'hero-title-2': 'Journey.',
+                'hero-description': 'Experience the finest chauffeur services and curated luxury tours across India.',
+                'hero-btn-ride': 'Book Ride',
+                'hero-btn-tours': 'View Tours',
+                'offers-subtitle': 'Fixed Rate Services',
+                'offers-title': 'Popular Routes',
+                'offers-description': 'Pre-booked routes at competitive rates',
+                'book-now': 'Book Now',
+                'tours-subtitle': 'Featured Escapes',
+                'tours-title': 'Popular Tour Packages',
+                'tours-description': 'Curated experiences for discerning travelers',
+                'view-all-tours': 'View All Tours',
+                'explore': 'Explore',
+                'features-eco': 'Eco-Conscious',
+                'features-eco-desc': 'Sustainable tourism practices across all our journeys.',
+                'features-safety': 'Premium Safety',
+                'features-safety-desc': '24/7 verified chauffeurs and secure digital payments.',
+                'features-ai': 'AI Concierge',
+                'features-ai-desc': 'Personalized recommendations via gaanYogi AI assistant.',
+                'pricing-subtitle': 'Transparent Pricing',
+                'pricing-title': 'Standard Fare Rates',
+                'pricing-description': 'Clear and competitive pricing for all routes',
+                'pricing-note': 'Rates are calculated at ₹16/km for Cruiser and ₹14/km for Car. Minimum fare applies.',
+                
+                // Rides Page
+                'rides-title': 'Book Your Journey',
+                'rides-subtitle': 'Luxury chauffeur services across India',
+                'rides-popular': 'Popular Routes',
+                'pickup-label': 'Pickup Location',
+                'pickup-placeholder': 'e.g. Mumbai Airport',
+                'destination-label': 'Destination',
+                'destination-placeholder': 'e.g. Taj Mahal',
+                'calculate-fare': 'Calculate Fare',
+                'calculating': 'Calculating...',
+                'distance': 'Distance',
+                'change': 'Change',
+                'select-vehicle': 'Select Vehicle',
+                'seats': 'Seats',
+                
+                // Tours Page
+                'tours-page-subtitle': 'Bespoke Itineraries',
+                'tours-page-title': 'Curated Escapes',
+                'tours-page-description': 'Discover handpicked luxury tours across India\'s most breathtaking destinations',
+                'view-details': 'View Details',
+                'back-tours': 'Back to Tours',
+                'tour-overview': 'Experience Overview',
+                'tour-highlights': 'Tour Highlights',
+                'package-price': 'Package Price',
+                'inclusive': 'All inclusive • Taxes included',
+                'tour-includes-1': 'Instant Confirmation',
+                'tour-includes-2': 'Secure Payment Gateway',
+                'tour-includes-3': 'Expert Local Guide',
+                'tour-book-now': 'Book Now',
+                'tour-help': 'Need help? Call +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'Complete Your Booking',
+                'booking-subtitle': 'Finalize your reservation for',
+                'full-name': 'Full Name *',
+                'full-name-placeholder': 'Enter your full name',
+                'phone': 'Phone *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'Total Amount',
+                'scan-pay': 'Scan to Pay via UPI',
+                'upi-id': 'UPI ID: 7743805933@upi',
+                'whatsapp-confirm': 'WhatsApp Confirmation',
+                'whatsapp-desc': 'After payment, share payment screenshot on WhatsApp for booking confirmation.',
+                'payment-made': 'I Have Made the Payment',
+                
+                // Booking Modal
+                'confirm-ride': 'Confirm Ride Request',
+                'ride-details': 'Complete booking details',
+                'passengers': 'Passengers *',
+                'confirm-send': 'Confirm & Send Request',
+                
+                // Admin
+                'admin-title': 'Admin Dashboard',
+                'admin-subtitle': 'Manage bookings and monitor services',
+                'recent-bookings': 'Recent Bookings',
+                'logout': 'Logout',
+                'admin-access': 'Admin Access',
+                'enter-passkey': 'Enter passkey to continue',
+                'passkey-placeholder': 'Enter Passkey',
+                'unlock-dashboard': 'Unlock Dashboard',
+                'customer': 'Customer',
+                'service': 'Service',
+                'amount': 'Amount',
+                'status': 'Status',
+                'date': 'Date',
+                'actions': 'Actions',
+                'confirm': 'Confirm',
+                'resend': 'Resend',
+                'delete': 'Delete',
+                'loading-bookings': 'Loading bookings...',
+                'no-bookings': 'No bookings found',
+                
+                // Toast Messages
+                'toast-location-error': 'Please enter both pickup and destination locations',
+                'toast-distance-success': 'Distance calculated: {distance} km',
+                'toast-booking-success': 'Booking submitted successfully!',
+                'toast-booking-error': 'Error processing booking. Please try again.',
+                'toast-ride-success': 'Ride request sent successfully!',
+                'toast-confirm-success': 'Booking confirmed! WhatsApp sent to {phone}',
+                'toast-resend-success': 'Confirmation resent to {phone}',
+                'toast-delete-success': 'Booking deleted successfully',
+                'toast-admin-success': 'Admin access granted',
+                'toast-admin-error': 'Invalid passkey',
+                
+                // Table Headers
+                'table-destination': 'Destination',
+                'table-distance': 'Distance (km)',
+                'table-cruiser': 'Cruiser ×16 (₹)',
+                'table-car': 'Car ×14 (₹)'
+            },
+            kn: {
+                // Navigation
+                'nav-subtitle': 'ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ',
+                'nav-home': 'ಮುಖಪುಟ',
+                'nav-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
+                'nav-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'nav-admin': 'ನಿರ್ವಾಹಕ',
+                'nav-book-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'user-guest': 'ಅತಿಥಿ',
+                'current-language': 'ಕನ್ನಡ',
+                
+                // Mobile Menu
+                'mobile-home': 'ಮುಖಪುಟ',
+                'mobile-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
+                'mobile-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'mobile-admin': 'ನಿರ್ವಾಹಕ',
+                
+                // Footer
+                'footer-tagline': 'ಆರಾಮ • ಸುರಕ್ಷತೆ • ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಯಾಣಗಳು',
+                'footer-desk': 'ಕಾನ್ಸಿರ್ಜ್ ಡೆಸ್ಕ್',
+                'footer-connect': 'ಸಂಪರ್ಕಿಸಿ',
+                'footer-copyright': '© 2026 GAANYOGI | ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ | ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು abhiwebdesign.great-site.net ರಕ್ಷಿಸಲಾಗಿದೆ',
+                
+                // Chat
+                'chat-title': 'ಗಾನ್ಯೋಗಿ AI',
+                'chat-subtitle': 'ಪ್ರಯಾಣ ಸಹಾಯಕ',
+                'chat-welcome': 'ನಮಸ್ಕಾರ! ನಾನು ಗಾನ್ಯೋಗಿ, ನಿಮ್ಮ AI ಪ್ರಯಾಣ ಸಹಾಯಕ. ನಿಮ್ಮ ಪ್ರಯಾಣದ ಬಗ್ಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?',
+                'chat-placeholder': 'ಪ್ರವಾಸಗಳು, ರೈಡ್ಗಳು ಅಥವಾ ಗಮ್ಯಸ್ಥಳಗಳ ಬಗ್ಗೆ ಕೇಳಿ...',
+                
+                // Home Page
+                'hero-subtitle': 'ಪ್ರೀಮಿಯಂ ಪ್ರಯಾಣ ಸೇವೆಗಳು',
+                'hero-title-1': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು',
+                'hero-title-2': 'ಉನ್ನತಗೊಳಿಸಿ.',
+                'hero-description': 'ಭಾರತದಾದ್ಯಂತ ಅತ್ಯುತ್ತಮ ಚಾಫರ್ಸ್ ಸೇವೆಗಳು ಮತ್ತು ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳ ಅನುಭವ.',
+                'hero-btn-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'hero-btn-tours': 'ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'offers-subtitle': 'ಸ್ಥಿರ ದರ ಸೇವೆಗಳು',
+                'offers-title': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
+                'offers-description': 'ಸ್ಪರ್ಧಾತ್ಮಕ ದರಗಳಲ್ಲಿ ಮುಂಚಿತವಾಗಿ ಬುಕ್ ಮಾಡಲಾದ ಮಾರ್ಗಗಳು',
+                'book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
+                'tours-subtitle': 'ವಿಶೇಷ ಎಸ್ಕೇಪ್ಗಳು',
+                'tours-title': 'ಜನಪ್ರಿಯ ಟೂರ್ ಪ್ಯಾಕೇಜ್ಗಳು',
+                'tours-description': 'ವಿವೇಚನಾಶೀಲ ಪ್ರಯಾಣಿಕರಿಗಾಗಿ ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಅನುಭವಗಳು',
+                'view-all-tours': 'ಎಲ್ಲಾ ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'explore': 'ಅನ್ವೇಷಿಸಿ',
+                'features-eco': 'ಪರಿಸರ ಸ್ನೇಹಿ',
+                'features-eco-desc': 'ನಮ್ಮ ಎಲ್ಲಾ ಪ್ರಯಾಣಗಳಲ್ಲಿ ಸುಸ್ಥಿರ ಪ್ರವಾಸೋದ್ಯಮ ಪದ್ಧತಿಗಳು.',
+                'features-safety': 'ಪ್ರೀಮಿಯಂ ಸುರಕ್ಷತೆ',
+                'features-safety-desc': '24/7 ಪರಿಶೀಲಿಸಲಾದ ಚಾಫರ್ಗಳು ಮತ್ತು ಸುರಕ್ಷಿತ ಡಿಜಿಟಲ್ ಪೇಮೆಂಟ್ಗಳು.',
+                'features-ai': 'AI ಸಹಾಯಕ',
+                'features-ai-desc': 'ಗಾನ್ಯೋಗಿ AI ಸಹಾಯಕದ ಮೂಲಕ ವೈಯಕ್ತಿಕಗೊಳಿಸಲಾದ ಶಿಫಾರಸುಗಳು.',
+                'pricing-subtitle': 'ಪಾರದರ್ಶಕ ಬೆಲೆ ನಿಗದಿ',
+                'pricing-title': 'ಪ್ರಮಾಣಿತ ದರಗಳು',
+                'pricing-description': 'ಎಲ್ಲಾ ಮಾರ್ಗಗಳಿಗೆ ಸ್ಪಷ್ಟ ಮತ್ತು ಸ್ಪರ್ಧಾತ್ಮಕ ಬೆಲೆಗಳು',
+                'pricing-note': 'ದರಗಳನ್ನು ಕ್ರೂಸರ್ಗೆ ₹16/ಕಿ.ಮೀ ಮತ್ತು ಕಾರಿಗೆ ₹14/ಕಿ.ಮೀ ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತದೆ. ಕನಿಷ್ಠ ದರ ಅನ್ವಯಿಸುತ್ತದೆ.',
+                
+                // Rides Page
+                'rides-title': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಬುಕ್ ಮಾಡಿ',
+                'rides-subtitle': 'ಭಾರತದಾದ್ಯಂತ ಲಕ್ಸರಿ ಚಾಫರ್ ಸೇವೆಗಳು',
+                'rides-popular': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
+                'pickup-label': 'ಪಿಕಪ್ ಸ್ಥಳ',
+                'pickup-placeholder': 'ಉದಾ. ಮುಂಬೈ ವಿಮಾನ ನಿಲ್ದಾಣ',
+                'destination-label': 'ಗಮ್ಯಸ್ಥಳ',
+                'destination-placeholder': 'ಉದಾ. ತಾಜ್ ಮಹಲ್',
+                'calculate-fare': 'ದರ ಲೆಕ್ಕಾಚಾರ',
+                'calculating': 'ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+                'distance': 'ದೂರ',
+                'change': 'ಬದಲಾಯಿಸಿ',
+                'select-vehicle': 'ವಾಹನ ಆಯ್ಕೆಮಾಡಿ',
+                'seats': 'ಆಸನಗಳು',
+                
+                // Tours Page
+                'tours-page-subtitle': 'ವಿಶೇಷ ಇಟಿನರರಿಗಳು',
+                'tours-page-title': 'ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಎಸ್ಕೇಪ್ಗಳು',
+                'tours-page-description': 'ಭಾರತದ ಅತ್ಯಂತ ಆಕರ್ಷಕ ಗಮ್ಯಸ್ಥಳಗಳಾದ್ಯಂತ ಹ್ಯಾಂಡ್ ಪಿಕ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ',
+                'view-details': 'ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'back-tours': 'ಪ್ರವಾಸಗಳಿಗೆ ಹಿಂತಿರುಗಿ',
+                'tour-overview': 'ಅನುಭವ ಅವಲೋಕನ',
+                'tour-highlights': 'ಪ್ರವಾಸದ ಮುಖ್ಯಾಂಶಗಳು',
+                'package-price': 'ಪ್ಯಾಕೇಜ್ ಬೆಲೆ',
+                'inclusive': 'ಎಲ್ಲಾ ಸೇರಿದೆ • ತೆರಿಗೆಗಳು ಸೇರಿದೆ',
+                'tour-includes-1': 'ತ್ವರಿತ ದೃಢೀಕರಣ',
+                'tour-includes-2': 'ಸುರಕ್ಷಿತ ಪೇಮೆಂಟ್ ಗೇಟ್ವೇ',
+                'tour-includes-3': 'ತಜ್ಞ ಸ್ಥಳೀಯ ಮಾರ್ಗದರ್ಶಿ',
+                'tour-book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
+                'tour-help': 'ಸಹಾಯ ಬೇಕೇ? ಕರೆ ಮಾಡಿ +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'ನಿಮ್ಮ ಬುಕಿಂಗ್ ಪೂರ್ಣಗೊಳಿಸಿ',
+                'booking-subtitle': 'ನಿಮ್ಮ ಕಾಯ್ದಿರಿಸುವಿಕೆಯನ್ನು ಅಂತಿಮಗೊಳಿಸಿ',
+                'full-name': 'ಪೂರ್ಣ ಹೆಸರು *',
+                'full-name-placeholder': 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
+                'phone': 'ಫೋನ್ *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'ಒಟ್ಟು ಮೊತ್ತ',
+                'scan-pay': 'ಯುಪಿಐ ಮೂಲಕ ಪಾವತಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ',
+                'upi-id': 'ಯುಪಿಐ ಐಡಿ: 7743805933@upi',
+                'whatsapp-confirm': 'ವಾಟ್ಸಾಪ್ ದೃಢೀಕರಣ',
+                'whatsapp-desc': 'ಪಾವತಿಯ ನಂತರ, ಬುಕಿಂಗ್ ದೃಢೀಕರಣಕ್ಕಾಗಿ ವಾಟ್ಸಾಪ್ನಲ್ಲಿ ಪಾವತಿ ಸ್ಕ್ರೀನ್ಶಾಟ್ ಹಂಚಿಕೊಳ್ಳಿ.',
+                'payment-made': 'ನಾನು ಪಾವತಿ ಮಾಡಿದ್ದೇನೆ',
+                
+                // Booking Modal
+                'confirm-ride': 'ರೈಡ್ ವಿನಂತಿಯನ್ನು ದೃಢೀಕರಿಸಿ',
+                'ride-details': 'ಬುಕಿಂಗ್ ವಿವರಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ',
+                'passengers': 'ಪ್ರಯಾಣಿಕರು *',
+                'confirm-send': 'ದೃಢೀಕರಿಸಿ ಮತ್ತು ವಿನಂತಿ ಕಳುಹಿಸಿ',
+                
+                // Admin
+                'admin-title': 'ನಿರ್ವಾಹಕ ಡ್ಯಾಶ್ಬೋರ್ಡ್',
+                'admin-subtitle': 'ಬುಕಿಂಗ್ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಸೇವೆಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ',
+                'recent-bookings': 'ಇತ್ತೀಚಿನ ಬುಕಿಂಗ್ಗಳು',
+                'logout': 'ಲಾಗ್ ಔಟ್',
+                'admin-access': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ',
+                'enter-passkey': 'ಮುಂದುವರೆಯಲು ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
+                'passkey-placeholder': 'ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
+                'unlock-dashboard': 'ಡ್ಯಾಶ್ಬೋರ್ಡ್ ಅನ್ಲಾಕ್ ಮಾಡಿ',
+                'customer': 'ಗ್ರಾಹಕ',
+                'service': 'ಸೇವೆ',
+                'amount': 'ಮೊತ್ತ',
+                'status': 'ಸ್ಥಿತಿ',
+                'date': 'ದಿನಾಂಕ',
+                'actions': 'ಕ್ರಿಯೆಗಳು',
+                'confirm': 'ದೃಢೀಕರಿಸಿ',
+                'resend': 'ಮರುಕಳುಹಿಸಿ',
+                'delete': 'ಅಳಿಸಿ',
+                'loading-bookings': 'ಬುಕಿಂಗ್ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+                'no-bookings': 'ಬುಕಿಂಗ್ಗಳು ಕಂಡುಬಂದಿಲ್ಲ',
+                
+                // Toast Messages
+                'toast-location-error': 'ದಯವಿಟ್ಟು ಪಿಕಪ್ ಮತ್ತು ಗಮ್ಯಸ್ಥಳ ಎರಡನ್ನೂ ನಮೂದಿಸಿ',
+                'toast-distance-success': 'ದೂರ ಲೆಕ್ಕಾಚಾರ: {distance} ಕಿ.ಮೀ',
+                'toast-booking-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!',
+                'toast-booking-error': 'ಬುಕಿಂಗ್ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+                'toast-ride-success': 'ರೈಡ್ ವಿನಂತಿ ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ!',
+                'toast-confirm-success': 'ಬುಕಿಂಗ್ ದೃಢೀಕರಿಸಲಾಗಿದೆ! ವಾಟ್ಸಾಪ್ {phone} ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ',
+                'toast-resend-success': 'ದೃಢೀಕರಣ {phone} ಗೆ ಮರುಕಳುಹಿಸಲಾಗಿದೆ',
+                'toast-delete-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ',
+                'toast-admin-success': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ ಮಂಜೂರಾಗಿದೆ',
+                'toast-admin-error': 'ಅಮಾನ್ಯ ಪಾಸ್ಕೀ',
+                
+                // Table Headers
+                'table-destination': 'ಗಮ್ಯಸ್ಥಳ',
+                'table-distance': 'ದೂರ (ಕಿ.ಮೀ)',
+                'table-cruiser': 'ಕ್ರೂಸರ್ ×16 (₹)',
+                'table-car': 'ಕಾರ್ ×14 (₹)'
+            },
+            hi: {
+                // Navigation
+                'nav-subtitle': 'यात्रा और पर्यटन',
+                'nav-home': 'होम',
+                'nav-tours': 'लग्जरी टूर',
+                'nav-rides': 'राइड बुक करें',
+                'nav-admin': 'एडमिन',
+                'nav-book-ride': 'राइड बुक करें',
+                'user-guest': 'अतिथि',
+                'current-language': 'हिंदी',
+                
+                // Mobile Menu
+                'mobile-home': 'होम',
+                'mobile-tours': 'लग्जरी टूर',
+                'mobile-rides': 'राइड बुक करें',
+                'mobile-admin': 'एडमिन',
+                
+                // Footer
+                'footer-tagline': 'आराम • सुरक्षा • विश्वसनीय यात्राएं',
+                'footer-desk': 'कॉन्सियर्ज डेस्क',
+                'footer-connect': 'कनेक्ट करें',
+                'footer-copyright': '© 2026 GAANYOGI | यात्रा और पर्यटन | सभी अधिकार abhiwebdesign.great-site.net द्वारा सुरक्षित',
+                
+                // Chat
+                'chat-title': 'गान्योगी AI',
+                'chat-subtitle': 'ट्रेवल कॉन्सियर्ज',
+                'chat-welcome': 'नमस्ते! मैं गान्योगी हूं, आपका AI ट्रेवल कॉन्सियर्ज। मैं आपकी यात्रा में कैसे मदद कर सकता हूं?',
+                'chat-placeholder': 'टूर, राइड या डेस्टिनेशन के बारे में पूछें...',
+                
+                // Home Page
+                'hero-subtitle': 'प्रीमियम ट्रेवल सेवाएं',
+                'hero-title-1': 'अपनी यात्रा को',
+                'hero-title-2': 'उन्नत करें।',
+                'hero-description': 'भारत भर में बेहतरीन चॉफर सेवाओं और क्यूरेटेड लग्जरी टूर का अनुभव करें।',
+                'hero-btn-ride': 'राइड बुक करें',
+                'hero-btn-tours': 'टूर देखें',
+                'offers-subtitle': 'फिक्स्ड रेट सेवाएं',
+                'offers-title': 'लोकप्रिय रूट',
+                'offers-description': 'प्रतिस्पर्धी दरों पर पहले से बुक किए गए रूट',
+                'book-now': 'अभी बुक करें',
+                'tours-subtitle': 'फीचर्ड एस्केप्स',
+                'tours-title': 'लोकप्रिय टूर पैकेज',
+                'tours-description': 'विवेकशील यात्रियों के लिए क्यूरेटेड अनुभव',
+                'view-all-tours': 'सभी टूर देखें',
+                'explore': 'एक्सप्लोर करें',
+                'features-eco': 'ईको-कॉन्शियस',
+                'features-eco-desc': 'हमारी सभी यात्राओं में सतत पर्यटन प्रथाएं।',
+                'features-safety': 'प्रीमियम सुरक्षा',
+                'features-safety-desc': '24/7 सत्यापित चॉफर और सुरक्षित डिजिटल भुगतान।',
+                'features-ai': 'AI कॉन्सियर्ज',
+                'features-ai-desc': 'गान्योगी AI असिस्टेंट के माध्यम से व्यक्तिगत सिफारिशें।',
+                'pricing-subtitle': 'पारदर्शी मूल्य निर्धारण',
+                'pricing-title': 'स्टैंडर्ड फेयर रेट्स',
+                'pricing-description': 'सभी रूट के लिए स्पष्ट और प्रतिस्पर्धी मूल्य',
+                'pricing-note': 'क्रूजर के लिए ₹16/किमी और कार के लिए ₹14/किमी पर दरें गणना की जाती हैं। न्यूनतम किराया लागू होता है।',
+                
+                // Rides Page
+                'rides-title': 'अपनी यात्रा बुक करें',
+                'rides-subtitle': 'भारत भर में लग्जरी चॉफर सेवाएं',
+                'rides-popular': 'लोकप्रिय रूट',
+                'pickup-label': 'पिकअप लोकेशन',
+                'pickup-placeholder': 'जैसे मुंबई एयरपोर्ट',
+                'destination-label': 'डेस्टिनेशन',
+                'destination-placeholder': 'जैसे ताज महल',
+                'calculate-fare': 'किराया गणना',
+                'calculating': 'गणना हो रही है...',
+                'distance': 'दूरी',
+                'change': 'बदलें',
+                'select-vehicle': 'वाहन चुनें',
+                'seats': 'सीटें',
+                
+                // Tours Page
+                'tours-page-subtitle': 'बेस्पोक इटिनरेरी',
+                'tours-page-title': 'क्यूरेटेड एस्केप्स',
+                'tours-page-description': 'भारत के सबसे आकर्षक डेस्टिनेशन में हैंडपिक लग्जरी टूर की खोज करें',
+                'view-details': 'विवरण देखें',
+                'back-tours': 'टूर पर वापस जाएं',
+                'tour-overview': 'अनुभव अवलोकन',
+                'tour-highlights': 'टूर हाइलाइट्स',
+                'package-price': 'पैकेज मूल्य',
+                'inclusive': 'सभी सम्मिलित • कर शामिल',
+                'tour-includes-1': 'तत्काल पुष्टि',
+                'tour-includes-2': 'सुरक्षित भुगतान गेटवे',
+                'tour-includes-3': 'विशेषज्ञ स्थानीय गाइड',
+                'tour-book-now': 'अभी बुक करें',
+                'tour-help': 'सहायता चाहिए? कॉल करें +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'अपनी बुकिंग पूरी करें',
+                'booking-subtitle': 'अपने आरक्षण को अंतिम रूप दें',
+                'full-name': 'पूरा नाम *',
+                'full-name-placeholder': 'अपना पूरा नाम दर्ज करें',
+                'phone': 'फोन *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'कुल राशि',
+                'scan-pay': 'यूपीआई के माध्यम से भुगतान करने के लिए स्कैन करें',
+                'upi-id': 'यूपीआई आईडी: 7743805933@upi',
+                'whatsapp-confirm': 'व्हाट्सएप पुष्टि',
+                'whatsapp-desc': 'भुगतान के बाद, बुकिंग पुष्टि के लिए व्हाट्सएप पर भुगतान स्क्रीनशॉट साझा करें।',
+                'payment-made': 'मैंने भुगतान कर दिया है',
+                
+                // Booking Modal
+                'confirm-ride': 'राइड अनुरोध की पुष्टि करें',
+                'ride-details': 'बुकिंग विवरण पूरा करें',
+                'passengers': 'यात्री *',
+                'confirm-send': 'पुष्टि करें और अनुरोध भेजें',
+                
+                // Admin
+                'admin-title': 'एडमिन डैशबोर्ड',
+                'admin-subtitle': 'बुकिंग प्रबंधित करें और सेवाओं की निगरानी करें',
+                'recent-bookings': 'हाल की बुकिंग',
+                'logout': 'लॉग आउट',
+                'admin-access': 'एडमिन एक्सेस',
+                'enter-passkey': 'जारी रखने के लिए पासकी दर्ज करें',
+                'passkey-placeholder': 'पासकी दर्ज करें',
+                'unlock-dashboard': 'डैशबोर्ड अनलॉक करें',
+                'customer': 'ग्राहक',
+                'service': 'सेवा',
+                'amount': 'राशि',
+                'status': 'स्थिति',
+                'date': 'तारीख',
+                'actions': 'कार्रवाइयां',
+                'confirm': 'पुष्टि करें',
+                'resend': 'पुनः भेजें',
+                'delete': 'हटाएं',
+                'loading-bookings': 'बुकिंग लोड हो रही हैं...',
+                'no-bookings': 'कोई बुकिंग नहीं मिली',
+                
+                // Toast Messages
+                'toast-location-error': 'कृपया पिकअप और डेस्टिनेशन दोनों स्थान दर्ज करें',
+                'toast-distance-success': 'दूरी गणना: {distance} किमी',
+                'toast-booking-success': 'बुकिंग सफलतापूर्वक सबमिट हुई!',
+                'toast-booking-error': 'बुकिंग प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।',
+                'toast-ride-success': 'राइड अनुरोध सफलतापूर्वक भेजा गया!',
+                'toast-confirm-success': 'बुकिंग पुष्टि हुई! व्हाट्सएप {phone} पर भेजा गया',
+                'toast-resend-success': 'पुष्टि {phone} पर पुनः भेजी गई',
+                'toast-delete-success': 'बुकिंग सफलतापूर्वक हटाई गई',
+                'toast-admin-success': 'एडमिन एक्सेस प्रदान किया गया',
+                'toast-admin-error': 'अमान्य पासकी',
+                
+                // Table Headers
+                'table-destination': 'गंतव्य',
+                'table-distance': 'दूरी (किमी)',
+                'table-cruiser': 'क्रूजर ×16 (₹)',
+                'table-car': 'कार ×14 (₹)'
+            }
+        };
+
+        // Application State
+        const state = {
+            user: null,
+            isAdminVerified: false,
+            map: null,
+            currentLanguage: 'en',
+            ride: {
+                step: 'INPUT',
+                pickup: '',
+                drop: '',
+                distance: 0,
+                loading: false,
+                selectedVehicle: null,
+                fixedPrice: null
+            }
+        };
+
+        // Fixed Data Arrays
+        const RIDE_OFFERS = [
+            { 
+                id: 'off1', 
+                from: 'Solapur', 
+                to: 'Haidra (Akkalkot)', 
+                price: 1500, 
+                distance: '70+',
+                img: 'https://images.unsplash.com/photo-1596739956461-8f5539d89953?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '3h',
+                rate: 16
+            },
+            { 
+                id: 'off2', 
+                from: 'Solapur', 
+                to: 'Akkalkot Center', 
+                price: 1052, 
+                distance: '38.5',
+                img: 'https://images.unsplash.com/photo-1563293887-827c7d1e8476?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '1h',
+                rate: 16
+            },
+            { 
+                id: 'off3', 
+                from: 'Mumbai', 
+                to: 'Akkalkot', 
+                price: 6582, 
+                distance: '443',
+                img: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '8h 30m',
+                rate: 16
+            },
+            { 
+                id: 'off4', 
+                from: 'Hyderabad', 
+                to: 'Akkalkot', 
+                price: 5000, 
+                distance: '293',
+                img: 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '5h 52m',
+                rate: 16
+            },
+            { 
+                id: 'off5', 
+                from: 'Solapur', 
+                to: 'Tuljapur', 
+                price: 1100, 
+                distance: '46.5',
+                img: 'https://images.unsplash.com/photo-1529255484355-cb73c33c04bb?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '1h 15m',
+                rate: 16
+            },
+            { 
+                id: 'off6', 
+                from: 'Solapur', 
+                to: 'Pandharpur', 
+                price: 1424, 
+                distance: '89',
+                img: 'https://images.unsplash.com/photo-1582555490422-9252c7b20536?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '2h',
+                rate: 16
+            },
+            { 
+                id: 'off7', 
+                from: 'Solapur', 
+                to: 'Lonavala', 
+                price: 5096, 
+                distance: '318.5',
+                img: 'https://images.unsplash.com/photo-1571406452293-c9183b38148b?q=80&w=400&auto=format&fit=crop', 
+                vehicle: 'Cruiser ×16', 
+                duration: '6h 30m',
+                rate: 16
+            }
+        ];
+
+        const TOURS = [
+            { 
+                id: 't001', 
+                title: 'Mystical Hampi', 
+                region: 'Karnataka', 
+                duration: '3 Days', 
+                price: 18500, 
+                rating: 4.8, 
+                image: 'https://images.unsplash.com/photo-1582555490422-9252c7b20536?q=80&w=400&auto=format&fit=crop', 
+                desc: 'Ancient ruins of Vijayanagara empire.', 
+                highlights: ['Coracle Ride', 'Sunset Point', 'Cave Temples'] 
+            },
+            { 
+                id: 't002', 
+                title: 'Konkan Bliss', 
+                region: 'Maharashtra', 
+                duration: '4 Days', 
+                price: 22000, 
+                rating: 4.9, 
+                image: 'https://images.unsplash.com/photo-1571406452293-c9183b38148b?q=80&w=400&auto=format&fit=crop', 
+                desc: 'Pristine beaches and scuba diving.', 
+                highlights: ['Scuba Diving', 'Fort Visit', 'Beach Bonfire'] 
+            },
+            { 
+                id: 't003', 
+                title: 'Coorg Hills', 
+                region: 'Karnataka', 
+                duration: '3 Days', 
+                price: 15500, 
+                rating: 4.7, 
+                image: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?q=80&w=400&auto=format&fit=crop', 
+                desc: 'Coffee plantations and misty hills.', 
+                highlights: ['Coffee Tasting', 'Abbey Falls', 'Elephants'] 
+            },
+            { 
+                id: 't004', 
+                title: 'Kerala Backwaters', 
+                region: 'Kerala', 
+                duration: '5 Days', 
+                price: 28500, 
+                rating: 4.9, 
+                image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?q=80&w=400&auto=format&fit=crop', 
+                desc: 'Serene houseboat cruise.', 
+                highlights: ['Houseboat Stay', 'Ayurvedic Spa', 'Kathakali Show'] 
+            }
+        ];
+
+        const VEHICLES = [
+            { 
+                id: 'v1', 
+                name: 'Gaanyogi Car', 
+                type: 'Car (AC)', 
+                seats: 4, 
+                rate: 14, 
+                img: 'https://imgd.aeplcdn.com/1280x720/n/cw/ec/135589/trax-cruiser-exterior-right-front-three-quarter-3.png?isig=0&q=80', 
+                color: 'electric' 
+            },
+            { 
+                id: 'v2', 
+                name: 'Gaanyogi Cruiser', 
+                type: 'Cruiser (AC)', 
+                seats: 6, 
+                rate: 16, 
+                img: 'https://imgd.aeplcdn.com/642x336/n/c6es93a_1572125.jpg?q=80', 
+                color: 'sunset' 
+            },
+            { 
+                id: 'v3', 
+                name: 'Gaanyogi Lux', 
+                type: 'Luxury', 
+                seats: 4, 
+                rate: 35, 
+                img: 'https://5.imimg.com/data5/SELLER/Default/2022/9/MQ/OA/WO/3622432/force-trax-cruiser-12-str-ac-500x500.jpg', 
+                color: 'melon' 
+            }
+        ];
+
+        // Language Functions
+        function getTranslation(key, params = {}) {
+            const lang = state.currentLanguage;
+            let text = translations[lang][key] || translations['en'][key] || key;
+            
+            // Replace parameters
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+            
+            return text;
+        }
+
+        function updateAllText() {
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[id]').forEach(element => {
+                const id = element.id;
+                if (translations[state.currentLanguage][id]) {
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = getTranslation(id);
+                    } else {
+                        element.textContent = getTranslation(id);
+                    }
+                }
+            });
+            
+            // Update chat input placeholder
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.placeholder = getTranslation('chat-placeholder');
+            }
+            
+            // Update current language display
+            const currentLangElement = document.getElementById('current-language');
+            if (currentLangElement) {
+                currentLangElement.textContent = getTranslation('current-language');
+            }
+            
+            // Re-render current page with new language
+            const currentRoute = window.currentRoute || 'home';
+            router.navigate(currentRoute);
+        }
+
+        function changeLanguage(lang) {
+            state.currentLanguage = lang;
+            localStorage.setItem('gaanyogi-language', lang);
+            updateAllText();
+            showToast(getTranslation('toast-language-changed', {language: getTranslation('current-language')}), 'success');
+        }
+
+        // Authentication
+        async function initAuth() {
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.log("Auth:", error);
+                showToast("Authentication error", "error");
+            }
+            
+            onAuthStateChanged(auth, (user) => {
+                state.user = user;
+                if (user) {
+                    const userStatus = document.getElementById('user-status');
+                    if (userStatus) {
+                        userStatus.innerHTML = `<i class="fa-solid fa-user mr-1"></i> ${getTranslation('user-guest')}`;
+                        userStatus.classList.remove('hidden');
+                    }
+                }
+            });
+        }
+
+        // Router
+        const router = {
+            navigate: (route, params) => {
+                const root = document.getElementById('app-root');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.currentRoute = route;
+                
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+                
+                if(route === 'home') renderHome(root);
+                else if(route === 'tours') renderTours(root);
+                else if(route === 'tour-detail') renderTourDetail(root, params);
+                else if(route === 'booking') renderBooking(root, params);
+                else if(route === 'rides') renderRides(root);
+                else if(route === 'admin') renderAdmin(root);
+                else router.navigate('home');
+            }
+        };
+
+        // Render Functions
+        function renderHome(container) {
+            container.innerHTML = `
+                <section class="relative h-[75vh] w-full overflow-hidden animate-fade-in">
+                    <div class="absolute inset-0">
+                        <img src="https://images.unsplash.com/photo-1545232979-8bf68ee0523f?q=80&w=1600" 
+                             class="w-full h-full object-cover" 
+                             alt="Luxury Travel">
+                        <div class="absolute inset-0 bg-gradient-to-r from-midnight/70 via-midnight/60 to-transparent"></div>
+                    </div>
+                    
+                    <div class="relative h-full flex flex-col justify-center px-4 md:px-24">
+                        <div class="max-w-2xl animate-slide-in">
+                            <div class="flex items-center gap-3 mb-6">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                                     alt="GAANYOGI Logo" 
+                                     class="logo-img w-16 h-16 object-contain bg-white/20 backdrop-blur-sm p-2 rounded-xl">
+                                <span class="text-electric font-bold tracking-[0.2em] text-xs uppercase">${getTranslation('hero-subtitle')}</span>
+                            </div>
+                            <h1 class="font-serif text-4xl md:text-6xl text-white mb-4 leading-tight">${getTranslation('hero-title-1')} <span class="text-teagreen italic">${getTranslation('hero-title-2')}</span></h1>
+                            <p class="text-white/90 text-lg mb-8 max-w-lg">${getTranslation('hero-description')}</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <button onclick="router.navigate('rides')" 
+                                        class="gradient-sunset text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:opacity-90 transition shadow-lg mobile-tap">
+                                    <i class="fa-solid fa-car-side mr-2"></i>${getTranslation('hero-btn-ride')}
+                                </button>
+                                <button onclick="router.navigate('tours')" 
+                                        class="bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/30 transition mobile-tap">
+                                    <i class="fa-solid fa-map-marked-alt mr-2"></i>${getTranslation('hero-btn-tours')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="container mx-auto px-4 py-12 -mt-20 relative z-10">
+                    <div class="mb-8">
+                        <span class="text-sunset font-bold tracking-[0.2em] text-xs uppercase block mb-2">${getTranslation('offers-subtitle')}</span>
+                        <h2 class="font-serif text-2xl md:text-3xl text-midnight mb-2">${getTranslation('offers-title')}</h2>
+                        <p class="text-slate text-sm">${getTranslation('offers-description')}</p>
+                    </div>
+
+                    <div class="flex gap-4 overflow-x-auto pb-6 custom-scrollbar hide-scrollbar px-2">
+                        ${RIDE_OFFERS.map(offer => `
+                            <div class="min-w-[280px] bg-white rounded-2xl shadow-lg overflow-hidden border border-electric/20 card-hover flex-shrink-0">
+                                <div class="h-40 overflow-hidden relative">
+                                    <img src="${offer.img}" class="w-full h-full object-cover" alt="${offer.from} to ${offer.to}">
+                                    <div class="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-electric">
+                                        <i class="fa-solid fa-road mr-1"></i>${offer.distance} km
+                                    </div>
+                                    <div class="absolute top-3 right-3 bg-electric text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                                        ${offer.vehicle}
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <div class="flex items-center gap-2 text-midnight font-bold text-lg mb-1">
+                                                <span>${offer.from.split(' ')[0]}</span>
+                                                <i class="fa-solid fa-arrow-right text-sunset"></i>
+                                                <span>${offer.to.split(' ')[0]}</span>
+                                            </div>
+                                            <p class="text-xs text-slate uppercase">${offer.vehicle} • ${offer.duration}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-2xl font-serif text-sunset font-bold">₹${offer.price.toLocaleString()}</p>
+                                            <p class="text-[10px] text-slate">₹${offer.rate}/km</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="bookOffer('${offer.id}')" 
+                                            class="w-full bg-electric/10 text-electric py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-electric hover:text-white transition mobile-tap">
+                                        <i class="fa-solid fa-bolt mr-2"></i>${getTranslation('book-now')}
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+
+                <section class="bg-cream/50 py-16">
+                    <div class="container mx-auto px-4">
+                        <div class="text-center mb-12">
+                            <span class="text-melon font-bold tracking-[0.3em] text-xs uppercase mb-3 block">${getTranslation('tours-subtitle')}</span>
+                            <h2 class="font-serif text-2xl md:text-3xl text-midnight mb-4">${getTranslation('tours-title')}</h2>
+                            <p class="text-slate max-w-2xl mx-auto">${getTranslation('tours-description')}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            ${TOURS.map(tour => `
+                                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all cursor-pointer border border-electric/10 card-hover" 
+                                     onclick="router.navigate('tour-detail', '${tour.id}')">
+                                    <div class="h-48 overflow-hidden">
+                                        <img src="${tour.image}" class="w-full h-full object-cover hover:scale-105 transition duration-500" alt="${tour.title}">
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h3 class="font-serif text-xl text-midnight hover:text-electric transition-colors">${tour.title}</h3>
+                                            <span class="text-xs text-slate font-bold">${tour.region}</span>
+                                        </div>
+                                        <p class="text-slate text-sm mb-4 line-clamp-2">${tour.desc}</p>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-sunset font-bold text-lg">₹${tour.price.toLocaleString()}</div>
+                                            <span class="text-xs text-electric font-bold uppercase tracking-wider flex items-center">
+                                                ${getTranslation('explore')} <i class="fa-solid fa-arrow-right ml-2"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="text-center mt-12">
+                            <button onclick="router.navigate('tours')" 
+                                    class="bg-white text-midnight border-2 border-electric px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-electric hover:text-white transition mobile-tap">
+                                ${getTranslation('view-all-tours')} <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="py-16">
+                    <div class="container mx-auto px-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="w-16 h-16 gradient-bg rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-6">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                <h3 class="font-serif text-xl font-bold text-midnight mb-3">${getTranslation('features-eco')}</h3>
+                                <p class="text-slate text-sm px-4">${getTranslation('features-eco-desc')}</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 gradient-sunset rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-6">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                                <h3 class="font-serif text-xl font-bold text-midnight mb-3">${getTranslation('features-safety')}</h3>
+                                <p class="text-slate text-sm px-4">${getTranslation('features-safety-desc')}</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-melon to-sunset rounded-2xl mx-auto flex items-center justify-center text-white text-2xl mb-6">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <h3 class="font-serif text-xl font-bold text-midnight mb-3">${getTranslation('features-ai')}</h3>
+                                <p class="text-slate text-sm px-4">${getTranslation('features-ai-desc')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-gradient-to-br from-electric/5 to-teagreen/5 py-16">
+                    <div class="container mx-auto px-4">
+                        <div class="text-center mb-12">
+                            <span class="text-electric font-bold tracking-[0.3em] text-xs uppercase mb-3 block">${getTranslation('pricing-subtitle')}</span>
+                            <h2 class="font-serif text-2xl md:text-3xl text-midnight mb-4">${getTranslation('pricing-title')}</h2>
+                            <p class="text-slate max-w-2xl mx-auto">${getTranslation('pricing-description')}</p>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-2xl shadow-lg">
+                            <table class="price-table w-full">
+                                <thead>
+                                    <tr>
+                                        <th>${getTranslation('table-destination')}</th>
+                                        <th>${getTranslation('table-distance')}</th>
+                                        <th>${getTranslation('table-cruiser')}</th>
+                                        <th>${getTranslation('table-car')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Solapur → Haidra</td>
+                                        <td class="text-slate">~37 km</td>
+                                        <td class="text-sunset font-bold highlight">592</td>
+                                        <td class="text-electric font-bold">518</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Solapur → Akkalkot Center</td>
+                                        <td class="text-slate">~35-38 km</td>
+                                        <td class="text-sunset font-bold highlight">560-608</td>
+                                        <td class="text-electric font-bold">490-532</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Mumbai → Akkalkot</td>
+                                        <td class="text-slate">~267 km</td>
+                                        <td class="text-sunset font-bold highlight">4,272</td>
+                                        <td class="text-electric font-bold">3,738</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Hyderabad → Akkalkot</td>
+                                        <td class="text-slate">~250 km</td>
+                                        <td class="text-sunset font-bold highlight">4,000</td>
+                                        <td class="text-electric font-bold">3,500</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Solapur → Tuljapur</td>
+                                        <td class="text-slate">~40-47 km</td>
+                                        <td class="text-sunset font-bold highlight">640-752</td>
+                                        <td class="text-electric font-bold">560-658</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Solapur → Pandharpur</td>
+                                        <td class="text-slate">~75-103 km</td>
+                                        <td class="text-sunset font-bold highlight">1,200-1,648</td>
+                                        <td class="text-electric font-bold">1,050-1,442</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-midnight">Solapur → Lonavala</td>
+                                        <td class="text-slate">~315-322 km</td>
+                                        <td class="text-sunset font-bold highlight">5,040-5,152</td>
+                                        <td class="text-electric font-bold">4,410-4,508</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-8 text-center">
+                            <p class="text-sm text-slate">
+                                <i class="fa-solid fa-info-circle text-electric mr-2"></i>
+                                ${getTranslation('pricing-note')}
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderRides(container) {
+            const { step, pickup, drop, distance, loading } = state.ride;
+
+            container.innerHTML = `
+                <div class="relative min-h-[calc(100vh-140px)] w-full animate-fade-in">
+                    <div id="map" class="absolute inset-0"></div>
+                    
+                    <div class="relative w-full md:w-[480px] bg-white/95 backdrop-blur-sm z-10 md:ml-4 md:my-4 md:rounded-2xl shadow-2xl border border-electric/20">
+                        <div class="gradient-bg p-6 text-white rounded-t-2xl md:rounded-t-2xl">
+                            <div class="flex items-center gap-3 mb-2">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                                     alt="GAANYOGI Logo" 
+                                     class="logo-img w-10 h-10 object-contain bg-white/20 backdrop-blur-sm p-1 rounded-lg">
+                                <h2 class="font-serif text-2xl">${getTranslation('rides-title')}</h2>
+                            </div>
+                            <p class="text-white/90 text-sm">${getTranslation('rides-subtitle')}</p>
+                        </div>
+
+                        <div class="p-4 md:p-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                            <div class="mb-6">
+                                <h3 class="text-xs font-bold text-sunset uppercase tracking-widest mb-3 flex items-center">
+                                    <i class="fa-solid fa-bolt mr-2"></i>${getTranslation('rides-popular')}
+                                </h3>
+                                <div class="flex gap-3 overflow-x-auto pb-4 custom-scrollbar hide-scrollbar">
+                                    ${RIDE_OFFERS.map(o => `
+                                        <div onclick="bookOffer('${o.id}')" 
+                                             class="min-w-[200px] bg-cream border border-electric/20 p-4 rounded-xl cursor-pointer hover:border-sunset transition mobile-tap card-hover">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <div>
+                                                    <div class="text-sm font-bold text-midnight">${o.to}</div>
+                                                    <div class="text-[10px] text-slate">From ${o.from}</div>
+                                                </div>
+                                                <span class="text-sm font-bold text-sunset">₹${o.price.toLocaleString()}</span>
+                                            </div>
+                                            <div class="flex justify-between text-[10px] text-slate">
+                                                <span class="flex items-center">
+                                                    <i class="fa-solid fa-road mr-1"></i> ${o.distance} km
+                                                </span>
+                                                <span class="flex items-center">
+                                                    <i class="fa-solid fa-car mr-1"></i> ${o.vehicle}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div class="${step === 'INPUT' ? 'block' : 'hidden'} space-y-4">
+                                <div>
+                                    <label class="text-xs uppercase tracking-widest text-midnight font-bold mb-2 block flex items-center">
+                                        <i class="fa-solid fa-location-dot mr-2 text-electric"></i>${getTranslation('pickup-label')}
+                                    </label>
+                                    <input id="pickup-input" value="${pickup}" 
+                                           class="w-full bg-cream border border-electric/20 rounded-xl p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap"
+                                           placeholder="${getTranslation('pickup-placeholder')}">
+                                </div>
+                                <div>
+                                    <label class="text-xs uppercase tracking-widest text-midnight font-bold mb-2 block flex items-center">
+                                        <i class="fa-solid fa-map-pin mr-2 text-melon"></i>${getTranslation('destination-label')}
+                                    </label>
+                                    <input id="drop-input" value="${drop}" 
+                                           class="w-full bg-cream border border-electric/20 rounded-xl p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap"
+                                           placeholder="${getTranslation('destination-placeholder')}">
+                                </div>
+                                <button onclick="estimateRide()" 
+                                        class="w-full gradient-sunset text-white font-bold py-3.5 rounded-xl hover:opacity-90 flex items-center justify-center gap-2 mobile-tap shadow-lg"
+                                        ${loading ? 'disabled' : ''}>
+                                    ${loading ? 
+                                        `<div class="loader w-5 h-5 border-white/20 border-t-white"></div> ${getTranslation('calculating')}` : 
+                                        `${getTranslation('calculate-fare')} <i class="fa-solid fa-calculator ml-1"></i>`
+                                    }
+                                </button>
+                            </div>
+
+                            <div class="${step === 'LIST' ? 'block animate-slide-in' : 'hidden'}">
+                                <div class="flex justify-between items-center border-b border-electric/10 pb-4 mb-6">
+                                    <div>
+                                        <span class="text-xs text-slate uppercase tracking-widest font-bold">${getTranslation('distance')}</span>
+                                        <div class="text-2xl font-serif text-midnight mt-1">${distance.toFixed(1)} <span class="text-sm text-sunset">km</span></div>
+                                    </div>
+                                    <button onclick="state.ride.step='INPUT'; router.navigate('rides')" 
+                                            class="text-xs text-electric hover:text-sunset font-bold mobile-tap">
+                                        <i class="fa-solid fa-pencil mr-1"></i>${getTranslation('change')}
+                                    </button>
+                                </div>
+                                
+                                <h3 class="text-xs font-bold text-midnight uppercase tracking-widest mb-4">${getTranslation('select-vehicle')}</h3>
+                                <div class="space-y-4">
+                                    ${VEHICLES.map(v => {
+                                        const fare = Math.round(distance * v.rate);
+                                        const colorClass = v.color === 'electric' ? 'border-electric/30 hover:border-electric' : 
+                                                          v.color === 'sunset' ? 'border-sunset/30 hover:border-sunset' : 
+                                                          'border-melon/30 hover:border-melon';
+                                        const bgClass = v.color === 'electric' ? 'bg-electric/5' : 
+                                                       v.color === 'sunset' ? 'bg-sunset/5' : 
+                                                       'bg-melon/5';
+                                        return `
+                                        <div onclick="openBookingModal('${v.id}')" 
+                                             class="${bgClass} border ${colorClass} rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer flex items-center gap-4 mobile-tap card-hover">
+                                            <div class="w-16 h-12 rounded-lg bg-white overflow-hidden">
+                                                <img src="${v.img}" class="w-full h-full object-cover" alt="${v.name}">
+                                            </div>
+                                            <div class="flex-1">
+                                                <h4 class="text-midnight font-bold text-sm">${v.name}</h4>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="text-[10px] uppercase font-bold bg-white text-slate px-2 py-0.5 rounded">${v.type}</span>
+                                                    <span class="text-[10px] text-slate">
+                                                        <i class="fa-solid fa-user mr-1"></i>${v.seats} ${getTranslation('seats')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-sunset font-bold text-lg">₹${fare.toLocaleString()}</div>
+                                                <div class="text-[10px] text-slate">₹${v.rate}/km</div>
+                                            </div>
+                                        </div>
+                                    `}).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                if (!state.map && document.getElementById('map')) {
+                    state.map = L.map('map', { 
+                        zoomControl: false,
+                        scrollWheelZoom: false
+                    }).setView([17.6599, 75.9064], 10);
+                    
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap'
+                    }).addTo(state.map);
+                    
+                    L.marker([17.6599, 75.9064])
+                        .addTo(state.map)
+                        .bindPopup('Solapur Central')
+                        .openPopup();
+                }
+            }, 100);
+        }
+
+        function renderTours(container) {
+            container.innerHTML = `
+                <div class="container mx-auto px-4 py-8 animate-fade-in">
+                    <div class="mb-8 md:mb-12 text-center">
+                        <span class="text-melon font-bold tracking-[0.3em] text-xs uppercase mb-3 block">${getTranslation('tours-page-subtitle')}</span>
+                        <h1 class="font-serif text-3xl md:text-4xl text-midnight mb-4">${getTranslation('tours-page-title')}</h1>
+                        <p class="text-slate max-w-2xl mx-auto">${getTranslation('tours-page-description')}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8">
+                        ${TOURS.map(t => `
+                            <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all cursor-pointer border border-electric/10 card-hover" 
+                                 onclick="router.navigate('tour-detail', '${t.id}')">
+                                <div class="h-56 md:h-64 overflow-hidden relative">
+                                    <img src="${t.image}" class="w-full h-full object-cover hover:scale-105 transition duration-500" alt="${t.title}">
+                                    <div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-electric shadow-sm">
+                                        <i class="fa-solid fa-star text-sunset mr-1"></i> ${t.rating}
+                                    </div>
+                                    <div class="absolute bottom-4 left-4 bg-electric text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                                        ${t.duration}
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="font-serif text-xl text-midnight hover:text-electric transition-colors">${t.title}</h3>
+                                        <span class="text-xs text-slate font-bold">${t.region}</span>
+                                    </div>
+                                    <p class="text-slate text-sm mb-4 line-clamp-2">${t.desc}</p>
+                                    <div class="flex justify-between items-center border-t border-electric/10 pt-4">
+                                        <div class="text-sunset font-bold text-xl">₹${t.price.toLocaleString()}</div>
+                                        <div class="text-xs text-electric font-bold uppercase tracking-wider flex items-center">
+                                            ${getTranslation('view-details')} <i class="fa-solid fa-arrow-right ml-2"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        function renderTourDetail(container, tourId) {
+            const tour = TOURS.find(t => t.id === tourId);
+            if (!tour) return router.navigate('tours');
+
+            container.innerHTML = `
+                <div class="container mx-auto px-4 py-6 animate-fade-in">
+                    <button onclick="router.navigate('tours')" 
+                            class="text-slate hover:text-electric mb-6 flex items-center text-xs uppercase tracking-widest transition mobile-tap">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> ${getTranslation('back-tours')}
+                    </button>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="rounded-2xl overflow-hidden shadow-xl h-[300px] md:h-[400px] relative">
+                                <img src="${tour.image}" class="w-full h-full object-cover" alt="${tour.title}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 to-transparent"></div>
+                                <div class="absolute bottom-6 left-6">
+                                    <h1 class="font-serif text-3xl md:text-4xl text-white mb-2">${tour.title}</h1>
+                                    <div class="flex flex-wrap gap-4 text-sm text-white/90 font-bold">
+                                        <span class="flex items-center"><i class="fa-solid fa-map-pin mr-2 text-teagreen"></i>${tour.region}</span>
+                                        <span class="flex items-center"><i class="fa-regular fa-clock mr-2 text-teagreen"></i>${tour.duration}</span>
+                                        <span class="flex items-center"><i class="fa-solid fa-star mr-2 text-teagreen"></i>${tour.rating} Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-electric/10">
+                                <h3 class="font-serif text-2xl text-midnight mb-4">${getTranslation('tour-overview')}</h3>
+                                <p class="text-slate leading-relaxed mb-8">${tour.desc}</p>
+                                
+                                <h3 class="font-serif text-xl text-midnight mb-4">${getTranslation('tour-highlights')}</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    ${tour.highlights.map((h, i) => `
+                                        <div class="flex items-center bg-teagreen/20 p-4 rounded-xl border border-teagreen/30 text-midnight text-sm font-semibold">
+                                            <div class="w-8 h-8 rounded-full bg-teagreen text-midnight flex items-center justify-center mr-3 font-bold">${i + 1}</div>
+                                            ${h}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1">
+                            <div class="bg-white p-6 md:p-8 rounded-2xl sticky top-24 border border-electric/10 shadow-xl">
+                                <div class="text-center mb-8 border-b border-electric/10 pb-8">
+                                    <p class="text-slate text-xs uppercase tracking-widest font-bold">${getTranslation('package-price')}</p>
+                                    <p class="text-3xl md:text-4xl font-serif text-sunset mt-2 font-bold">₹${(tour.price * 1.05).toLocaleString()}</p>
+                                    <p class="text-xs text-slate mt-1">${getTranslation('inclusive')}</p>
+                                </div>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-center text-sm text-slate">
+                                        <i class="fa-solid fa-check text-teagreen mr-3 w-5"></i>
+                                        <span>${getTranslation('tour-includes-1')}</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-slate">
+                                        <i class="fa-solid fa-shield-halved text-teagreen mr-3 w-5"></i>
+                                        <span>${getTranslation('tour-includes-2')}</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-slate">
+                                        <i class="fa-solid fa-user-tie text-teagreen mr-3 w-5"></i>
+                                        <span>${getTranslation('tour-includes-3')}</span>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="router.navigate('booking', '${tour.id}')" 
+                                        class="w-full gradient-sunset text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:opacity-90 transition shadow-lg mobile-tap">
+                                    <i class="fa-solid fa-calendar-check mr-2"></i>${getTranslation('tour-book-now')}
+                                </button>
+                                
+                                <div class="text-center mt-6">
+                                    <p class="text-xs text-slate">
+                                        <i class="fa-solid fa-phone-volume mr-2 text-electric"></i>
+                                        ${getTranslation('tour-help')}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function renderBooking(container, tourId) {
+            const tour = TOURS.find(t => t.id === tourId);
+            if (!tour) return router.navigate('tours');
+            
+            const total = Math.round(tour.price * 1.05);
+
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto py-8 px-4 animate-slide-in">
+                    <div class="bg-white p-6 md:p-8 rounded-2xl border border-electric/10 shadow-xl">
+                        <div class="mb-8">
+                            <div class="flex items-center gap-3 mb-4">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                                     alt="GAANYOGI Logo" 
+                                     class="logo-img w-12 h-12 object-contain">
+                                <div>
+                                    <h2 class="font-serif text-2xl md:text-3xl text-midnight mb-2">${getTranslation('booking-title')}</h2>
+                                    <p class="text-slate text-sm">${getTranslation('booking-subtitle')} ${tour.title}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form onsubmit="handleTourBookingSubmit(event, '${tour.id}', ${total})" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('full-name')}</label>
+                                    <input name="name" required 
+                                           class="w-full bg-cream border border-electric/20 rounded-xl p-4 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none mobile-tap"
+                                           placeholder="${getTranslation('full-name-placeholder')}">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('phone')}</label>
+                                    <input name="phone" type="tel" required 
+                                           class="w-full bg-cream border border-electric/20 rounded-xl p-4 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none mobile-tap"
+                                           placeholder="${getTranslation('phone-placeholder')}">
+                                </div>
+                            </div>
+                            
+                            <div class="bg-teagreen/10 p-6 rounded-xl border border-dashed border-teagreen">
+                                <div class="text-center mb-4">
+                                    <p class="text-midnight font-bold">${getTranslation('total-amount')}: <span class="text-sunset text-xl">₹${total.toLocaleString()}</span></p>
+                                    <p class="text-xs text-slate">${getTranslation('inclusive')}</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm font-bold text-midnight mb-3">${getTranslation('scan-pay')}</p>
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=7743805933@upi&pn=Gaanyogi&am=${total}&cu=INR&tn=Tour%20Booking%20${tour.title}" 
+                                         class="w-40 h-40 mx-auto rounded-lg mb-3 border border-electric/20"
+                                         alt="UPI QR Code">
+                                    <p class="text-xs text-slate">${getTranslation('upi-id')}</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-electric/10 text-midnight p-4 rounded-lg text-xs flex gap-3 items-start">
+                                <i class="fa-brands fa-whatsapp text-teagreen text-base mt-0.5"></i> 
+                                <div>
+                                    <p class="font-bold mb-1">${getTranslation('whatsapp-confirm')}</p>
+                                    <p>${getTranslation('whatsapp-desc')}</p>
+                                </div>
+                            </div>
+
+                            <button type="submit" 
+                                    class="w-full gradient-sunset text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:opacity-90 transition shadow-lg mobile-tap">
+                                <i class="fa-solid fa-lock mr-2"></i>${getTranslation('payment-made')}
+                            </button>
+                        </form>
+                    </div>
+                </div>`;
+        }
+
+        function renderAdmin(container) {
+            if (!state.isAdminVerified) {
+                container.innerHTML = `
+                    <div class="flex items-center justify-center min-h-[70vh] animate-fade-in">
+                        <div class="bg-white p-8 rounded-2xl border border-electric/10 w-full max-w-sm mx-4 shadow-xl">
+                            <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h2 class="font-serif text-2xl text-midnight mb-2 text-center">${getTranslation('admin-access')}</h2>
+                            <p class="text-slate text-sm text-center mb-6">${getTranslation('enter-passkey')}</p>
+                            <form onsubmit="handleAdminLogin(event)">
+                                <input type="password" id="admin-password-input" 
+                                       class="w-full bg-cream border border-electric/20 rounded-xl p-4 text-midnight text-center mb-4 focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none mobile-tap" 
+                                       placeholder="${getTranslation('passkey-placeholder')}" 
+                                       required
+                                       autocomplete="off">
+                                <button type="submit" 
+                                        class="w-full gradient-sunset text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition mobile-tap">
+                                    <i class="fa-solid fa-key mr-2"></i>${getTranslation('unlock-dashboard')}
+                                </button>
+                            </form>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="container mx-auto px-4 py-8 animate-fade-in">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                                 alt="GAANYOGI Logo" 
+                                 class="logo-img w-12 h-12 object-contain">
+                            <div>
+                                <h1 class="font-serif text-2xl md:text-3xl text-midnight mb-2">${getTranslation('admin-title')}</h1>
+                                <p class="text-slate text-sm">${getTranslation('admin-subtitle')}</p>
+                            </div>
+                        </div>
+                        <button onclick="state.isAdminVerified = false; router.navigate('admin')" 
+                                class="bg-cream text-slate px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-electric/10 transition mobile-tap">
+                            <i class="fa-solid fa-sign-out-alt mr-2"></i>${getTranslation('logout')}
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-electric/10 overflow-hidden shadow-lg">
+                        <div class="p-6 border-b border-electric/10">
+                            <h3 class="font-serif text-xl text-midnight">${getTranslation('recent-bookings')}</h3>
+                            <p class="text-slate text-sm">${getTranslation('admin-subtitle')}</p>
+                        </div>
+                        <div class="overflow-x-auto hide-scrollbar">
+                            <table class="w-full text-sm text-left text-slate min-w-[600px]">
+                                <thead class="text-xs text-midnight uppercase bg-cream">
+                                    <tr>
+                                        <th class="px-6 py-4">${getTranslation('customer')}</th>
+                                        <th class="px-6 py-4">${getTranslation('service')}</th>
+                                        <th class="px-6 py-4">${getTranslation('amount')}</th>
+                                        <th class="px-6 py-4">${getTranslation('status')}</th>
+                                        <th class="px-6 py-4">${getTranslation('date')}</th>
+                                        <th class="px-6 py-4">${getTranslation('actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-table-body">
+                                    <tr><td colspan="6" class="p-6 text-center text-slate">${getTranslation('loading-bookings')}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
+            
+            loadAdminBookings();
+        }
+
+        function renderBookingModal() {
+            const v = state.ride.selectedVehicle;
+            const isFixed = !!state.ride.fixedPrice;
+            const fare = state.ride.fixedPrice || Math.round(state.ride.distance * v.rate);
+            
+            const modalHTML = `
+            <div class="fixed inset-0 z-[80] flex items-end md:items-center justify-center p-4 animate-fade-in">
+                <div class="absolute inset-0 bg-midnight/70 backdrop-blur-sm" onclick="closeBookingModal()"></div>
+                <div class="relative w-full md:max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8 animate-slide-in max-h-[90vh] overflow-y-auto hide-scrollbar">
+                    <button onclick="closeBookingModal()" 
+                            class="absolute right-4 top-4 text-slate hover:text-electric mobile-tap">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                             alt="GAANYOGI Logo" 
+                             class="logo-img w-10 h-10 object-contain">
+                        <div>
+                            <h2 class="text-xl font-serif text-midnight mb-1">${getTranslation('confirm-ride')}</h2>
+                            <p class="text-slate text-sm">${getTranslation('ride-details')}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 bg-cream p-4 rounded-xl mb-6 border border-electric/20">
+                        <div class="w-20 h-16 rounded-lg overflow-hidden">
+                            <img src="${v.img}" class="w-full h-full object-cover" alt="${v.name}">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-midnight font-bold text-sm">${v.name}</h3>
+                            <p class="text-sunset font-bold text-sm">₹${fare.toLocaleString()}</p>
+                            <p class="text-slate text-xs">${isFixed ? 'Fixed Price Offer' : `${state.ride.distance.toFixed(1)} km × ₹${v.rate}/km`}</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="submitRideBooking(event)" class="space-y-4">
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('full-name')}</label>
+                            <input name="customerName" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="${getTranslation('                                   placeholder="${getTranslation('full-name-placeholder')}">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('phone')}</label>
+                            <input name="customerPhone" type="tel" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="${getTranslation('phone-placeholder')}">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('passengers')}</label>
+                            <input name="passengerCount" type="number" min="1" max="${v.seats}" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="1 to ${v.seats}" value="1">
+                        </div>
+                        ${!isFixed ? `
+                        <div class="bg-teagreen/10 p-4 rounded-lg border border-teagreen/30">
+                            <div class="flex justify-between text-sm text-slate mb-2">
+                                <span>${getTranslation('pickup-label')}:</span>
+                                <span class="font-bold text-midnight">${state.ride.pickup}</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-slate">
+                                <span>${getTranslation('destination-label')}:</span>
+                                <span class="font-bold text-midnight">${state.ride.drop}</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="pt-4">
+                            <button type="submit" 
+                                    class="w-full gradient-sunset text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition shadow-lg mobile-tap">
+                                <i class="fa-solid fa-paper-plane mr-2"></i>${getTranslation('confirm-send')}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+            
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.innerHTML = modalHTML;
+            }
+        }
+
+        // UI Functions
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('animate-slide-in');
+            }
+        }
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow) {
+                chatWindow.classList.toggle('hidden');
+                chatWindow.classList.toggle('animate-fade-in');
+                
+                if (!chatWindow.classList.contains('hidden')) {
+                    document.getElementById('chat-input').focus();
+                }
+            }
+        }
+
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            const toastId = 'toast-' + Date.now();
+            const bgColor = type === 'success' ? 'bg-teagreen' : 
+                           type === 'error' ? 'bg-sunset' : 
+                           'bg-electric';
+            
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `${bgColor} text-white text-sm py-3 px-4 rounded-xl shadow-lg animate-slide-in pointer-events-auto max-w-[300px]`;
+            toast.innerHTML = `
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex-1">${message}</div>
+                    <button onclick="document.getElementById('${toastId}').remove()" class="text-white/80 hover:text-white mobile-tap">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                const t = document.getElementById(toastId);
+                if (t) {
+                    t.style.opacity = '0';
+                    t.style.transform = 'translateX(100%)';
+                    setTimeout(() => t.remove(), 300);
+                }
+            }, duration);
+        }
+
+        // Ride Functions
+        async function estimateRide() {
+            const pickupInput = document.getElementById('pickup-input');
+            const dropInput = document.getElementById('drop-input');
+            
+            if (!pickupInput || !dropInput) return;
+            
+            const pickup = pickupInput.value.trim();
+            const drop = dropInput.value.trim();
+            
+            if (!pickup || !drop) {
+                showToast(getTranslation('toast-location-error'), 'error');
+                return;
+            }
+            
+            state.ride.pickup = pickup;
+            state.ride.drop = drop;
+            state.ride.loading = true;
+            
+            // Simulate distance calculation (in real app, use Google Maps API)
+            setTimeout(() => {
+                // Mock distance calculation based on input
+                const mockDistance = 40 + Math.random() * 200;
+                state.ride.distance = mockDistance;
+                state.ride.step = 'LIST';
+                state.ride.loading = false;
+                state.ride.fixedPrice = null;
+                
+                router.navigate('rides');
+                showToast(getTranslation('toast-distance-success', {distance: mockDistance.toFixed(1)}), 'success');
+            }, 1500);
+        }
+
+        function bookOffer(offerId) {
+            const offer = RIDE_OFFERS.find(o => o.id === offerId);
+            if (!offer) return;
+            
+            const vehicle = VEHICLES.find(v => v.rate === offer.rate) || VEHICLES[0];
+            
+            state.ride.pickup = offer.from;
+            state.ride.drop = offer.to;
+            state.ride.distance = parseFloat(offer.distance) || 50;
+            state.ride.fixedPrice = offer.price;
+            state.ride.selectedVehicle = vehicle;
+            state.ride.step = 'LIST';
+            
+            router.navigate('rides');
+            
+            setTimeout(() => {
+                openBookingModal(vehicle.id);
+            }, 100);
+        }
+
+        function openBookingModal(vehicleId) {
+            const vehicle = VEHICLES.find(v => v.id === vehicleId);
+            if (!vehicle) return;
+            
+            state.ride.selectedVehicle = vehicle;
+            renderBookingModal();
+        }
+
+        function closeBookingModal() {
+            document.getElementById('modal-container').innerHTML = '';
+        }
+
+        async function submitRideBooking(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const customerName = formData.get('customerName');
+            const customerPhone = formData.get('customerPhone');
+            const passengerCount = formData.get('passengerCount');
+            
+            const v = state.ride.selectedVehicle;
+            const isFixed = !!state.ride.fixedPrice;
+            const fare = state.ride.fixedPrice || Math.round(state.ride.distance * v.rate);
+            
+            try {
+                const bookingData = {
+                    type: 'ride',
+                    customerName,
+                    customerPhone,
+                    pickupLocation: state.ride.pickup,
+                    destination: state.ride.drop,
+                    vehicleType: v.name,
+                    vehicleDetails: `${v.type}, ${v.seats} seats`,
+                    distance: isFixed ? null : state.ride.distance.toFixed(1),
+                    fare,
+                    passengerCount: parseInt(passengerCount),
+                    timestamp: serverTimestamp(),
+                    status: 'pending'
+                };
+                
+                await addDoc(collection(db, 'bookings'), bookingData);
+                
+                showToast(getTranslation('toast-ride-success'), 'success');
+                
+                const whatsappMessage = `New Ride Booking:\n\nName: ${customerName}\nPhone: ${customerPhone}\nFrom: ${state.ride.pickup}\nTo: ${state.ride.drop}\nVehicle: ${v.name}\nPassengers: ${passengerCount}\nFare: ₹${fare}\n\nPlease confirm via WhatsApp: +91 ${customerPhone}`;
+                window.open(`https://wa.me/917743805933?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                
+                closeBookingModal();
+                state.ride.step = 'INPUT';
+                state.ride.pickup = '';
+                state.ride.drop = '';
+                
+            } catch (error) {
+                console.error('Booking error:', error);
+                showToast(getTranslation('toast-booking-error'), 'error');
+            }
+        }
+
+        async function handleTourBookingSubmit(event, tourId, totalAmount) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const name = formData.get('name');
+            const phone = formData.get('phone');
+            
+            const tour = TOURS.find(t => t.id === tourId);
+            if (!tour) return;
+            
+            try {
+                const bookingData = {
+                    type: 'tour',
+                    customerName: name,
+                    customerPhone: phone,
+                    tourName: tour.title,
+                    tourDuration: tour.duration,
+                    amount: totalAmount,
+                    timestamp: serverTimestamp(),
+                    status: 'pending'
+                };
+                
+                await addDoc(collection(db, 'bookings'), bookingData);
+                
+                showToast(getTranslation('toast-booking-success'), 'success');
+                
+                const whatsappMessage = `New Tour Booking:\n\nName: ${name}\nPhone: ${phone}\nTour: ${tour.title}\nDuration: ${tour.duration}\nAmount: ₹${totalAmount}\n\nPlease confirm via WhatsApp: +91 ${phone}`;
+                window.open(`https://wa.me/917743805933?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+                
+                setTimeout(() => {
+                    router.navigate('tours');
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Tour booking error:', error);
+                showToast(getTranslation('toast-booking-error'), 'error');
+            }
+        }
+
+        // Admin Functions
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            
+            const input = document.getElementById('admin-password-input');
+            const password = input.value;
+            
+            if (password === 'GAANYOGI2026') {
+                state.isAdminVerified = true;
+                showToast(getTranslation('toast-admin-success'), 'success');
+                setTimeout(() => {
+                    router.navigate('admin');
+                }, 500);
+            } else {
+                showToast(getTranslation('toast-admin-error'), 'error');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        async function loadAdminBookings() {
+            const tableBody = document.getElementById('admin-table-body');
+            if (!tableBody) return;
+            
+            try {
+                const q = query(collection(db, 'bookings'), orderBy('timestamp', 'desc'), limit(50));
+                
+                onSnapshot(q, (snapshot) => {
+                    if (snapshot.empty) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="fa-solid fa-inbox text-4xl text-electric/30 mb-3"></i>
+                                        <p>${getTranslation('no-bookings')}</p>
+                                    </div>
+                                </td>
+                            </tr>`;
+                        return;
+                    }
+                    
+                    tableBody.innerHTML = '';
+                    
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const date = data.timestamp?.toDate() || new Date();
+                        const formattedDate = date.toLocaleDateString();
+                        const formattedTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        const statusColor = data.status === 'confirmed' ? 'bg-teagreen/20 text-teagreen' :
+                                          data.status === 'cancelled' ? 'bg-sunset/20 text-sunset' :
+                                          'bg-electric/20 text-electric';
+                        
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-electric/10 hover:bg-cream/50 transition-colors';
+                        row.innerHTML = `
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-midnight">${data.customerName}</div>
+                                <div class="text-xs text-slate">${data.customerPhone}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-midnight">${data.type === 'ride' ? '🚗 Ride' : '🏛️ Tour'}</div>
+                                <div class="text-xs text-slate">${data.tourName || `${data.pickupLocation} → ${data.destination}`}</div>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-sunset">₹${data.amount || data.fare}</td>
+                            <td class="px-6 py-4">
+                                <span class="${statusColor} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                    ${data.status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-slate text-sm">
+                                ${formattedDate}<br>${formattedTime}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+                                    ${data.status !== 'confirmed' ? `
+                                    <button onclick="confirmBooking('${doc.id}', '${data.customerPhone}')" 
+                                            class="bg-teagreen/20 text-teagreen hover:bg-teagreen hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition mobile-tap">
+                                        <i class="fa-solid fa-check mr-1"></i>${getTranslation('confirm')}
+                                    </button>
+                                    ` : ''}
+                                    <button onclick="resendConfirmation('${doc.id}', '${data.customerPhone}', '${data.type}')" 
+                                            class="bg-electric/20 text-electric hover:bg-electric hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition mobile-tap">
+                                        <i class="fa-solid fa-paper-plane mr-1"></i>${getTranslation('resend')}
+                                    </button>
+                                    <button onclick="deleteBooking('${doc.id}')" 
+                                            class="bg-sunset/20 text-sunset hover:bg-sunset hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition mobile-tap">
+                                        <i class="fa-solid fa-trash mr-1"></i>${getTranslation('delete')}
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-slate">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa-solid fa-exclamation-triangle text-4xl text-sunset/30 mb-3"></i>
+                                <p>Error loading bookings</p>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        async function confirmBooking(bookingId, phone) {
+            try {
+                await updateDoc(doc(db, 'bookings', bookingId), {
+                    status: 'confirmed'
+                });
+                
+                showToast(getTranslation('toast-confirm-success', {phone}), 'success');
+                
+                const confirmMessage = `Your booking with GAANYOGI has been confirmed! Our team will contact you shortly. For any queries, call +91 7743805933.`;
+                window.open(`https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(confirmMessage)}`, '_blank');
+                
+            } catch (error) {
+                console.error('Error confirming booking:', error);
+                showToast('Error confirming booking', 'error');
+            }
+        }
+
+        async function resendConfirmation(bookingId, phone, type) {
+            try {
+                const message = type === 'ride' 
+                    ? 'Your ride booking with GAANYOGI is confirmed! Our chauffeur will contact you 30 minutes before pickup.'
+                    : 'Your tour package with GAANYOGI is confirmed! Detailed itinerary will be shared 24 hours before departure.';
+                
+                window.open(`https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(message)}`, '_blank');
+                
+                showToast(getTranslation('toast-resend-success', {phone}), 'success');
+                
+            } catch (error) {
+                console.error('Error resending confirmation:', error);
+                showToast('Error resending confirmation', 'error');
+            }
+        }
+
+        async function deleteBooking(bookingId) {
+            if (!confirm('Are you sure you want to delete this booking?')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'bookings', bookingId));
+                showToast(getTranslation('toast-delete-success'), 'success');
+            } catch (error) {
+                console.error('Error deleting booking:', error);
+                showToast('Error deleting booking', 'error');
+            }
+        }
+
+        // Chat Functions
+        async function handleChatSend() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const messagesDiv = document.getElementById('chat-messages');
+            
+            // Add user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'flex justify-end animate-slide-in';
+            userMessageDiv.innerHTML = `
+                <div class="bg-electric text-white p-3 rounded-2xl rounded-br-none max-w-[85%] shadow-sm">
+                    ${message}
+                </div>
+            `;
+            messagesDiv.appendChild(userMessageDiv);
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'flex justify-start';
+            typingDiv.innerHTML = `
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-electric/20 flex items-center gap-2">
+                    <div class="loader w-3 h-3"></div>
+                    <div class="loader w-3 h-3"></div>
+                    <div class="loader w-3 h-3"></div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Simulate AI response (in real app, integrate with AI API)
+            setTimeout(() => {
+                typingDiv.remove();
+                
+                let response = "Thank you for your message! For booking inquiries, please use the booking form or call our concierge desk at +91 7743805933.";
+                
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('tour') || lowerMessage.includes('package')) {
+                    response = "We offer curated luxury tours across India. You can view all our tour packages on the Tours page. Popular destinations include Hampi, Konkan, Coorg, and Kerala backwaters.";
+                } else if (lowerMessage.includes('ride') || lowerMessage.includes('car') || lowerMessage.includes('book')) {
+                    response = "You can book a ride by visiting the 'Book Ride' page. We offer fixed-rate routes and custom journeys with luxury vehicles. Rates start at ₹14/km for cars and ₹16/km for cruisers.";
+                } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('rate')) {
+                    response = "Our pricing is transparent! Car: ₹14/km, Cruiser: ₹16/km. Minimum fare applies. Check the pricing table on the homepage for popular routes.";
+                } else if (lowerMessage.includes('contact') || lowerMessage.includes('call') || lowerMessage.includes('whatsapp')) {
+                    response = "Contact our concierge desk: 📞 +91 7743805933 (WhatsApp available) 📧 gaanyogitours@gmail.com";
+                } else if (lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('solapur')) {
+                    response = "We're based in Solapur, Maharashtra and serve routes across India including Mumbai, Hyderabad, Pune, and popular pilgrimage destinations.";
+                }
+                
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'flex justify-start animate-slide-in';
+                aiMessageDiv.innerHTML = `
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-electric/20 max-w-[85%] text-midnight shadow-sm">
+                        ${response}
+                    </div>
+                `;
+                messagesDiv.appendChild(aiMessageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 1500);
+        }
+
+        // Initialize Chat Input Event Listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleChatSend();
+                    }
+                });
+            }
+        });
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Load saved language
+            const savedLang = localStorage.getItem('gaanyogi-language') || 'en';
+            state.currentLanguage = savedLang;
+            
+            // Initialize auth and UI
+            await initAuth();
+            updateAllText();
+            
+            // Start with home page
+            router.navigate('home');
+            
+            // Add event listeners for navigation
+            document.querySelectorAll('nav button, #mobile-menu button').forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes('router.navigate')) {
+                    // Already has onclick handler
+                }
+            });
+            
+            // Initialize tooltips and other UI enhancements
+            console.log('GAANYOGI Tours & Travels initialized');
+        });
+
+        // Expose functions to global scope
+        window.router = router;
+        window.changeLanguage = changeLanguage;
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.toggleChat = toggleChat;
+        window.estimateRide = estimateRide;
+        window.bookOffer = bookOffer;
+        window.openBookingModal = openBookingModal;
+        window.closeBookingModal = closeBookingModal;
+        window.submitRideBooking = submitRideBooking;
+        window.handleTourBookingSubmit = handleTourBookingSubmit;
+        window.handleAdminLogin = handleAdminLogin;
+        window.confirmBooking = confirmBooking;
+        window.resendConfirmation = resendConfirmation;
+        window.deleteBooking = deleteBooking;
+        window.handleChatSend = handleChatSend;
+
+    </script>
+</body>
+</html>
