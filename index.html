@@ -38,12 +38,10 @@
             scroll-behavior: smooth;
         }
 
-        /* Smooth scrolling for the whole page */
         html {
             scroll-behavior: smooth;
         }
 
-        /* Hide scrollbar but keep functionality */
         .hide-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -53,7 +51,6 @@
             display: none;
         }
 
-        /* Custom animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -64,6 +61,11 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         .animate-fade-in {
             animation: fadeIn 0.6s ease-out;
         }
@@ -72,7 +74,10 @@
             animation: slideIn 0.5s ease-out;
         }
 
-        /* Gradient backgrounds */
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
         .gradient-bg {
             background: linear-gradient(135deg, var(--electric-blue) 0%, var(--tea-green) 100%);
         }
@@ -81,7 +86,6 @@
             background: linear-gradient(135deg, var(--sunset) 0%, var(--melon) 100%);
         }
 
-        /* Card hover effects */
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -91,20 +95,20 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* Mobile tap targets */
         .mobile-tap {
             min-height: 44px;
             min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Glass morphism effect */
         .glass {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -124,7 +128,6 @@
             background: var(--slate);
         }
 
-        /* Loader */
         .loader {
             border: 3px solid rgba(0, 168, 232, 0.2);
             border-radius: 50%;
@@ -139,7 +142,6 @@
             100% { transform: rotate(360deg); } 
         }
 
-        /* Text truncation */
         .line-clamp-2 {
             overflow: hidden;
             display: -webkit-box;
@@ -147,7 +149,6 @@
             -webkit-line-clamp: 2;
         }
 
-        /* Logo styling */
         .logo-img {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
             transition: transform 0.3s ease;
@@ -157,7 +158,6 @@
             transform: scale(1.05);
         }
 
-        /* Table styling */
         .price-table {
             border-collapse: separate;
             border-spacing: 0;
@@ -192,13 +192,24 @@
             font-weight: 600;
         }
 
-        /* Language specific */
-        .lang-kannada {
-            font-family: 'Manrope', sans-serif;
+        /* Modal Styles */
+        .modal-overlay {
+            animation: fadeIn 0.3s ease-out;
         }
         
-        .lang-hindi {
-            font-family: 'Manrope', sans-serif;
+        .modal-content {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        /* Chat Styles */
+        .chat-message {
+            max-width: 85%;
+        }
+
+        /* Map Container */
+        #map {
+            min-height: 400px;
+            z-index: 1;
         }
     </style>
 
@@ -224,12 +235,6 @@
                         'fade-in': 'fadeIn 0.6s ease-out',
                         'slide-in': 'slideIn 0.5s ease-out',
                         'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        }
                     }
                 }
             }
@@ -252,28 +257,28 @@
             
             <div class="hidden md:flex items-center gap-6">
                 <div class="relative group">
-                    <button id="language-dropdown-btn" class="flex items-center gap-2 text-sm font-semibold text-slate hover:text-electric transition py-2 px-3 rounded-lg hover:bg-electric/10">
+                    <button id="language-dropdown-btn" class="flex items-center gap-2 text-sm font-semibold text-slate hover:text-electric transition py-2 px-3 rounded-lg hover:bg-electric/10 mobile-tap">
                         <i class="fa-solid fa-language"></i>
                         <span id="current-language">English</span>
                         <i class="fa-solid fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-electric/20 hidden group-hover:block animate-fade-in z-50">
-                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                    <div id="language-dropdown" class="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-electric/20 hidden animate-fade-in z-50">
+                        <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2 mobile-tap">
                             <span class="w-6 text-center">🇺🇸</span> English
                         </button>
-                        <button onclick="changeLanguage('kn')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                        <button onclick="changeLanguage('kn')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2 mobile-tap">
                             <span class="w-6 text-center">🇮🇳</span> ಕನ್ನಡ
                         </button>
-                        <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2">
+                        <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-3 hover:bg-electric/10 text-slate font-medium flex items-center gap-2 mobile-tap">
                             <span class="w-6 text-center">🇮🇳</span> हिंदी
                         </button>
                     </div>
                 </div>
                 
-                <button onclick="router.navigate('home')" id="nav-home" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Home</button>
-                <button onclick="router.navigate('tours')" id="nav-tours" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Luxury Tours</button>
-                <button onclick="router.navigate('rides')" id="nav-rides" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Book Ride</button>
-                <button onclick="router.navigate('admin')" id="nav-admin" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric">Admin</button>
+                <button onclick="router.navigate('home')" id="nav-home" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric mobile-tap">Home</button>
+                <button onclick="router.navigate('tours')" id="nav-tours" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric mobile-tap">Luxury Tours</button>
+                <button onclick="router.navigate('rides')" id="nav-rides" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric mobile-tap">Book Ride</button>
+                <button onclick="router.navigate('admin')" id="nav-admin" class="hover:text-electric transition py-2 border-b-2 border-transparent hover:border-electric mobile-tap">Admin</button>
             </div>
 
             <div class="flex items-center gap-3">
@@ -290,28 +295,28 @@
         </div>
         
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden glass border-t border-gray-100 p-5 flex flex-col gap-4 animate-slide-in">
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-gray-100 p-5 flex flex-col gap-4">
             <div class="flex gap-2 mb-2">
-                <button onclick="changeLanguage('en'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                <button onclick="changeLanguage('en'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium mobile-tap">
                     English
                 </button>
-                <button onclick="changeLanguage('kn'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                <button onclick="changeLanguage('kn'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium mobile-tap">
                     ಕನ್ನಡ
                 </button>
-                <button onclick="changeLanguage('hi'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium">
+                <button onclick="changeLanguage('hi'); toggleMobileMenu()" class="flex-1 bg-electric/10 text-electric py-2 rounded-lg text-sm font-medium mobile-tap">
                     हिंदी
                 </button>
             </div>
-             <button onclick="router.navigate('home'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+             <button onclick="router.navigate('home'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center mobile-tap">
                 <i class="fa-solid fa-home mr-3 text-electric"></i><span id="mobile-home">Home</span>
              </button>
-             <button onclick="router.navigate('tours'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+             <button onclick="router.navigate('tours'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center mobile-tap">
                 <i class="fa-solid fa-map-marked-alt mr-3 text-sunset"></i><span id="mobile-tours">Luxury Tours</span>
              </button>
-             <button onclick="router.navigate('rides'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+             <button onclick="router.navigate('rides'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center mobile-tap">
                 <i class="fa-solid fa-car mr-3 text-melon"></i><span id="mobile-rides">Book Ride</span>
              </button>
-             <button onclick="router.navigate('admin'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center">
+             <button onclick="router.navigate('admin'); toggleMobileMenu()" class="text-left text-midnight font-bold py-3 text-base flex items-center mobile-tap">
                 <i class="fa-solid fa-lock mr-3 text-slate"></i><span id="mobile-admin">Admin</span>
              </button>
         </div>
@@ -344,9 +349,9 @@
             <div>
                 <h3 id="footer-connect" class="font-serif text-lg font-bold mb-4 text-white">Connect</h3>
                 <div class="flex gap-4 text-xl">
-                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-teagreen transition hover:scale-110"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="text-gray-400 hover:text-teagreen transition hover:scale-110 mobile-tap"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://facebook.com" target="_blank" class="text-gray-400 hover:text-teagreen transition hover:scale-110 mobile-tap"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="text-gray-400 hover:text-teagreen transition hover:scale-110 mobile-tap"><i class="fa-brands fa-twitter"></i></a>
                 </div>
             </div>
         </div>
@@ -396,7 +401,7 @@
     <div id="toast-container" class="fixed top-20 right-4 z-[70] flex flex-col gap-3 w-auto max-w-[300px] pointer-events-none"></div>
 
     <!-- Modal Container -->
-    <div id="modal-container"></div>
+    <div id="modal-container" class="fixed inset-0 z-[80] pointer-events-none"></div>
 
     <!-- External Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -422,454 +427,13 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Language Data
-        const translations = {
-            en: {
-                // Navigation
-                'nav-subtitle': 'Tours and Travels',
-                'nav-home': 'Home',
-                'nav-tours': 'Luxury Tours',
-                'nav-rides': 'Book Ride',
-                'nav-admin': 'Admin',
-                'nav-book-ride': 'Book Ride',
-                'user-guest': 'Guest',
-                'current-language': 'English',
-                
-                // Mobile Menu
-                'mobile-home': 'Home',
-                'mobile-tours': 'Luxury Tours',
-                'mobile-rides': 'Book Ride',
-                'mobile-admin': 'Admin',
-                
-                // Footer
-                'footer-tagline': 'Comfort • Safety • Reliable Journeys',
-                'footer-desk': 'Concierge Desk',
-                'footer-connect': 'Connect',
-                'footer-copyright': '© 2026 GAANYOGI | Tours and Travels | All rights reserved by abhiwebdesign.great-site.net',
-                
-                // Chat
-                'chat-title': 'gaanYogi AI',
-                'chat-subtitle': 'Travel Concierge',
-                'chat-welcome': 'Namaste! I am gaanYogi, your AI travel concierge. How can I assist with your journey today?',
-                'chat-placeholder': 'Ask about tours, rides, or destinations...',
-                
-                // Home Page
-                'hero-subtitle': 'Premium Travel Services',
-                'hero-title-1': 'Elevate Your',
-                'hero-title-2': 'Journey.',
-                'hero-description': 'Experience the finest chauffeur services and curated luxury tours across India.',
-                'hero-btn-ride': 'Book Ride',
-                'hero-btn-tours': 'View Tours',
-                'offers-subtitle': 'Fixed Rate Services',
-                'offers-title': 'Popular Routes',
-                'offers-description': 'Pre-booked routes at competitive rates',
-                'book-now': 'Book Now',
-                'tours-subtitle': 'Featured Escapes',
-                'tours-title': 'Popular Tour Packages',
-                'tours-description': 'Curated experiences for discerning travelers',
-                'view-all-tours': 'View All Tours',
-                'explore': 'Explore',
-                'features-eco': 'Eco-Conscious',
-                'features-eco-desc': 'Sustainable tourism practices across all our journeys.',
-                'features-safety': 'Premium Safety',
-                'features-safety-desc': '24/7 verified chauffeurs and secure digital payments.',
-                'features-ai': 'AI Concierge',
-                'features-ai-desc': 'Personalized recommendations via gaanYogi AI assistant.',
-                'pricing-subtitle': 'Transparent Pricing',
-                'pricing-title': 'Standard Fare Rates',
-                'pricing-description': 'Clear and competitive pricing for all routes',
-                'pricing-note': 'Rates are calculated at ₹16/km for Cruiser and ₹14/km for Car. Minimum fare applies.',
-                
-                // Rides Page
-                'rides-title': 'Book Your Journey',
-                'rides-subtitle': 'Luxury chauffeur services across India',
-                'rides-popular': 'Popular Routes',
-                'pickup-label': 'Pickup Location',
-                'pickup-placeholder': 'e.g. Mumbai Airport',
-                'destination-label': 'Destination',
-                'destination-placeholder': 'e.g. Taj Mahal',
-                'calculate-fare': 'Calculate Fare',
-                'calculating': 'Calculating...',
-                'distance': 'Distance',
-                'change': 'Change',
-                'select-vehicle': 'Select Vehicle',
-                'seats': 'Seats',
-                
-                // Tours Page
-                'tours-page-subtitle': 'Bespoke Itineraries',
-                'tours-page-title': 'Curated Escapes',
-                'tours-page-description': 'Discover handpicked luxury tours across India\'s most breathtaking destinations',
-                'view-details': 'View Details',
-                'back-tours': 'Back to Tours',
-                'tour-overview': 'Experience Overview',
-                'tour-highlights': 'Tour Highlights',
-                'package-price': 'Package Price',
-                'inclusive': 'All inclusive • Taxes included',
-                'tour-includes-1': 'Instant Confirmation',
-                'tour-includes-2': 'Secure Payment Gateway',
-                'tour-includes-3': 'Expert Local Guide',
-                'tour-book-now': 'Book Now',
-                'tour-help': 'Need help? Call +91 7743805933',
-                
-                // Booking Page
-                'booking-title': 'Complete Your Booking',
-                'booking-subtitle': 'Finalize your reservation for',
-                'full-name': 'Full Name *',
-                'full-name-placeholder': 'Enter your full name',
-                'phone': 'Phone *',
-                'phone-placeholder': '+91 00000 00000',
-                'total-amount': 'Total Amount',
-                'scan-pay': 'Scan to Pay via UPI',
-                'upi-id': 'UPI ID: 7743805933@upi',
-                'whatsapp-confirm': 'WhatsApp Confirmation',
-                'whatsapp-desc': 'After payment, share payment screenshot on WhatsApp for booking confirmation.',
-                'payment-made': 'I Have Made the Payment',
-                
-                // Booking Modal
-                'confirm-ride': 'Confirm Ride Request',
-                'ride-details': 'Complete booking details',
-                'passengers': 'Passengers *',
-                'confirm-send': 'Confirm & Send Request',
-                
-                // Admin
-                'admin-title': 'Admin Dashboard',
-                'admin-subtitle': 'Manage bookings and monitor services',
-                'recent-bookings': 'Recent Bookings',
-                'logout': 'Logout',
-                'admin-access': 'Admin Access',
-                'enter-passkey': 'Enter passkey to continue',
-                'passkey-placeholder': 'Enter Passkey',
-                'unlock-dashboard': 'Unlock Dashboard',
-                'customer': 'Customer',
-                'service': 'Service',
-                'amount': 'Amount',
-                'status': 'Status',
-                'date': 'Date',
-                'actions': 'Actions',
-                'confirm': 'Confirm',
-                'resend': 'Resend',
-                'delete': 'Delete',
-                'loading-bookings': 'Loading bookings...',
-                'no-bookings': 'No bookings found',
-                
-                // Toast Messages
-                'toast-location-error': 'Please enter both pickup and destination locations',
-                'toast-distance-success': 'Distance calculated: {distance} km',
-                'toast-booking-success': 'Booking submitted successfully!',
-                'toast-booking-error': 'Error processing booking. Please try again.',
-                'toast-ride-success': 'Ride request sent successfully!',
-                'toast-confirm-success': 'Booking confirmed! WhatsApp sent to {phone}',
-                'toast-resend-success': 'Confirmation resent to {phone}',
-                'toast-delete-success': 'Booking deleted successfully',
-                'toast-admin-success': 'Admin access granted',
-                'toast-admin-error': 'Invalid passkey',
-                
-                // Table Headers
-                'table-destination': 'Destination',
-                'table-distance': 'Distance (km)',
-                'table-cruiser': 'Cruiser ×16 (₹)',
-                'table-car': 'Car ×14 (₹)'
-            },
-            kn: {
-                // Navigation
-                'nav-subtitle': 'ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ',
-                'nav-home': 'ಮುಖಪುಟ',
-                'nav-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
-                'nav-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
-                'nav-admin': 'ನಿರ್ವಾಹಕ',
-                'nav-book-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
-                'user-guest': 'ಅತಿಥಿ',
-                'current-language': 'ಕನ್ನಡ',
-                
-                // Mobile Menu
-                'mobile-home': 'ಮುಖಪುಟ',
-                'mobile-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
-                'mobile-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
-                'mobile-admin': 'ನಿರ್ವಾಹಕ',
-                
-                // Footer
-                'footer-tagline': 'ಆರಾಮ • ಸುರಕ್ಷತೆ • ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಯಾಣಗಳು',
-                'footer-desk': 'ಕಾನ್ಸಿರ್ಜ್ ಡೆಸ್ಕ್',
-                'footer-connect': 'ಸಂಪರ್ಕಿಸಿ',
-                'footer-copyright': '© 2026 GAANYOGI | ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ | ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು abhiwebdesign.great-site.net ರಕ್ಷಿಸಲಾಗಿದೆ',
-                
-                // Chat
-                'chat-title': 'ಗಾನ್ಯೋಗಿ AI',
-                'chat-subtitle': 'ಪ್ರಯಾಣ ಸಹಾಯಕ',
-                'chat-welcome': 'ನಮಸ್ಕಾರ! ನಾನು ಗಾನ್ಯೋಗಿ, ನಿಮ್ಮ AI ಪ್ರಯಾಣ ಸಹಾಯಕ. ನಿಮ್ಮ ಪ್ರಯಾಣದ ಬಗ್ಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?',
-                'chat-placeholder': 'ಪ್ರವಾಸಗಳು, ರೈಡ್ಗಳು ಅಥವಾ ಗಮ್ಯಸ್ಥಳಗಳ ಬಗ್ಗೆ ಕೇಳಿ...',
-                
-                // Home Page
-                'hero-subtitle': 'ಪ್ರೀಮಿಯಂ ಪ್ರಯಾಣ ಸೇವೆಗಳು',
-                'hero-title-1': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು',
-                'hero-title-2': 'ಉನ್ನತಗೊಳಿಸಿ.',
-                'hero-description': 'ಭಾರತದಾದ್ಯಂತ ಅತ್ಯುತ್ತಮ ಚಾಫರ್ಸ್ ಸೇವೆಗಳು ಮತ್ತು ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳ ಅನುಭವ.',
-                'hero-btn-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
-                'hero-btn-tours': 'ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
-                'offers-subtitle': 'ಸ್ಥಿರ ದರ ಸೇವೆಗಳು',
-                'offers-title': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
-                'offers-description': 'ಸ್ಪರ್ಧಾತ್ಮಕ ದರಗಳಲ್ಲಿ ಮುಂಚಿತವಾಗಿ ಬುಕ್ ಮಾಡಲಾದ ಮಾರ್ಗಗಳು',
-                'book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
-                'tours-subtitle': 'ವಿಶೇಷ ಎಸ್ಕೇಪ್ಗಳು',
-                'tours-title': 'ಜನಪ್ರಿಯ ಟೂರ್ ಪ್ಯಾಕೇಜ್ಗಳು',
-                'tours-description': 'ವಿವೇಚನಾಶೀಲ ಪ್ರಯಾಣಿಕರಿಗಾಗಿ ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಅನುಭವಗಳು',
-                'view-all-tours': 'ಎಲ್ಲಾ ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
-                'explore': 'ಅನ್ವೇಷಿಸಿ',
-                'features-eco': 'ಪರಿಸರ ಸ್ನೇಹಿ',
-                'features-eco-desc': 'ನಮ್ಮ ಎಲ್ಲಾ ಪ್ರಯಾಣಗಳಲ್ಲಿ ಸುಸ್ಥಿರ ಪ್ರವಾಸೋದ್ಯಮ ಪದ್ಧತಿಗಳು.',
-                'features-safety': 'ಪ್ರೀಮಿಯಂ ಸುರಕ್ಷತೆ',
-                'features-safety-desc': '24/7 ಪರಿಶೀಲಿಸಲಾದ ಚಾಫರ್ಗಳು ಮತ್ತು ಸುರಕ್ಷಿತ ಡಿಜಿಟಲ್ ಪೇಮೆಂಟ್ಗಳು.',
-                'features-ai': 'AI ಸಹಾಯಕ',
-                'features-ai-desc': 'ಗಾನ್ಯೋಗಿ AI ಸಹಾಯಕದ ಮೂಲಕ ವೈಯಕ್ತಿಕಗೊಳಿಸಲಾದ ಶಿಫಾರಸುಗಳು.',
-                'pricing-subtitle': 'ಪಾರದರ್ಶಕ ಬೆಲೆ ನಿಗದಿ',
-                'pricing-title': 'ಪ್ರಮಾಣಿತ ದರಗಳು',
-                'pricing-description': 'ಎಲ್ಲಾ ಮಾರ್ಗಗಳಿಗೆ ಸ್ಪಷ್ಟ ಮತ್ತು ಸ್ಪರ್ಧಾತ್ಮಕ ಬೆಲೆಗಳು',
-                'pricing-note': 'ದರಗಳನ್ನು ಕ್ರೂಸರ್ಗೆ ₹16/ಕಿ.ಮೀ ಮತ್ತು ಕಾರಿಗೆ ₹14/ಕಿ.ಮೀ ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತದೆ. ಕನಿಷ್ಠ ದರ ಅನ್ವಯಿಸುತ್ತದೆ.',
-                
-                // Rides Page
-                'rides-title': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಬುಕ್ ಮಾಡಿ',
-                'rides-subtitle': 'ಭಾರತದಾದ್ಯಂತ ಲಕ್ಸರಿ ಚಾಫರ್ ಸೇವೆಗಳು',
-                'rides-popular': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
-                'pickup-label': 'ಪಿಕಪ್ ಸ್ಥಳ',
-                'pickup-placeholder': 'ಉದಾ. ಮುಂಬೈ ವಿಮಾನ ನಿಲ್ದಾಣ',
-                'destination-label': 'ಗಮ್ಯಸ್ಥಳ',
-                'destination-placeholder': 'ಉದಾ. ತಾಜ್ ಮಹಲ್',
-                'calculate-fare': 'ದರ ಲೆಕ್ಕಾಚಾರ',
-                'calculating': 'ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ...',
-                'distance': 'ದೂರ',
-                'change': 'ಬದಲಾಯಿಸಿ',
-                'select-vehicle': 'ವಾಹನ ಆಯ್ಕೆಮಾಡಿ',
-                'seats': 'ಆಸನಗಳು',
-                
-                // Tours Page
-                'tours-page-subtitle': 'ವಿಶೇಷ ಇಟಿನರರಿಗಳು',
-                'tours-page-title': 'ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಎಸ್ಕೇಪ್ಗಳು',
-                'tours-page-description': 'ಭಾರತದ ಅತ್ಯಂತ ಆಕರ್ಷಕ ಗಮ್ಯಸ್ಥಳಗಳಾದ್ಯಂತ ಹ್ಯಾಂಡ್ ಪಿಕ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ',
-                'view-details': 'ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
-                'back-tours': 'ಪ್ರವಾಸಗಳಿಗೆ ಹಿಂತಿರುಗಿ',
-                'tour-overview': 'ಅನುಭವ ಅವಲೋಕನ',
-                'tour-highlights': 'ಪ್ರವಾಸದ ಮುಖ್ಯಾಂಶಗಳು',
-                'package-price': 'ಪ್ಯಾಕೇಜ್ ಬೆಲೆ',
-                'inclusive': 'ಎಲ್ಲಾ ಸೇರಿದೆ • ತೆರಿಗೆಗಳು ಸೇರಿದೆ',
-                'tour-includes-1': 'ತ್ವರಿತ ದೃಢೀಕರಣ',
-                'tour-includes-2': 'ಸುರಕ್ಷಿತ ಪೇಮೆಂಟ್ ಗೇಟ್ವೇ',
-                'tour-includes-3': 'ತಜ್ಞ ಸ್ಥಳೀಯ ಮಾರ್ಗದರ್ಶಿ',
-                'tour-book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
-                'tour-help': 'ಸಹಾಯ ಬೇಕೇ? ಕರೆ ಮಾಡಿ +91 7743805933',
-                
-                // Booking Page
-                'booking-title': 'ನಿಮ್ಮ ಬುಕಿಂಗ್ ಪೂರ್ಣಗೊಳಿಸಿ',
-                'booking-subtitle': 'ನಿಮ್ಮ ಕಾಯ್ದಿರಿಸುವಿಕೆಯನ್ನು ಅಂತಿಮಗೊಳಿಸಿ',
-                'full-name': 'ಪೂರ್ಣ ಹೆಸರು *',
-                'full-name-placeholder': 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
-                'phone': 'ಫೋನ್ *',
-                'phone-placeholder': '+91 00000 00000',
-                'total-amount': 'ಒಟ್ಟು ಮೊತ್ತ',
-                'scan-pay': 'ಯುಪಿಐ ಮೂಲಕ ಪಾವತಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ',
-                'upi-id': 'ಯುಪಿಐ ಐಡಿ: 7743805933@upi',
-                'whatsapp-confirm': 'ವಾಟ್ಸಾಪ್ ದೃಢೀಕರಣ',
-                'whatsapp-desc': 'ಪಾವತಿಯ ನಂತರ, ಬುಕಿಂಗ್ ದೃಢೀಕರಣಕ್ಕಾಗಿ ವಾಟ್ಸಾಪ್ನಲ್ಲಿ ಪಾವತಿ ಸ್ಕ್ರೀನ್ಶಾಟ್ ಹಂಚಿಕೊಳ್ಳಿ.',
-                'payment-made': 'ನಾನು ಪಾವತಿ ಮಾಡಿದ್ದೇನೆ',
-                
-                // Booking Modal
-                'confirm-ride': 'ರೈಡ್ ವಿನಂತಿಯನ್ನು ದೃಢೀಕರಿಸಿ',
-                'ride-details': 'ಬುಕಿಂಗ್ ವಿವರಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ',
-                'passengers': 'ಪ್ರಯಾಣಿಕರು *',
-                'confirm-send': 'ದೃಢೀಕರಿಸಿ ಮತ್ತು ವಿನಂತಿ ಕಳುಹಿಸಿ',
-                
-                // Admin
-                'admin-title': 'ನಿರ್ವಾಹಕ ಡ್ಯಾಶ್ಬೋರ್ಡ್',
-                'admin-subtitle': 'ಬುಕಿಂಗ್ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಸೇವೆಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ',
-                'recent-bookings': 'ಇತ್ತೀಚಿನ ಬುಕಿಂಗ್ಗಳು',
-                'logout': 'ಲಾಗ್ ಔಟ್',
-                'admin-access': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ',
-                'enter-passkey': 'ಮುಂದುವರೆಯಲು ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
-                'passkey-placeholder': 'ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
-                'unlock-dashboard': 'ಡ್ಯಾಶ್ಬೋರ್ಡ್ ಅನ್ಲಾಕ್ ಮಾಡಿ',
-                'customer': 'ಗ್ರಾಹಕ',
-                'service': 'ಸೇವೆ',
-                'amount': 'ಮೊತ್ತ',
-                'status': 'ಸ್ಥಿತಿ',
-                'date': 'ದಿನಾಂಕ',
-                'actions': 'ಕ್ರಿಯೆಗಳು',
-                'confirm': 'ದೃಢೀಕರಿಸಿ',
-                'resend': 'ಮರುಕಳುಹಿಸಿ',
-                'delete': 'ಅಳಿಸಿ',
-                'loading-bookings': 'ಬುಕಿಂಗ್ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
-                'no-bookings': 'ಬುಕಿಂಗ್ಗಳು ಕಂಡುಬಂದಿಲ್ಲ',
-                
-                // Toast Messages
-                'toast-location-error': 'ದಯವಿಟ್ಟು ಪಿಕಪ್ ಮತ್ತು ಗಮ್ಯಸ್ಥಳ ಎರಡನ್ನೂ ನಮೂದಿಸಿ',
-                'toast-distance-success': 'ದೂರ ಲೆಕ್ಕಾಚಾರ: {distance} ಕಿ.ಮೀ',
-                'toast-booking-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!',
-                'toast-booking-error': 'ಬುಕಿಂಗ್ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
-                'toast-ride-success': 'ರೈಡ್ ವಿನಂತಿ ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ!',
-                'toast-confirm-success': 'ಬುಕಿಂಗ್ ದೃಢೀಕರಿಸಲಾಗಿದೆ! ವಾಟ್ಸಾಪ್ {phone} ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ',
-                'toast-resend-success': 'ದೃಢೀಕರಣ {phone} ಗೆ ಮರುಕಳುಹಿಸಲಾಗಿದೆ',
-                'toast-delete-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ',
-                'toast-admin-success': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ ಮಂಜೂರಾಗಿದೆ',
-                'toast-admin-error': 'ಅಮಾನ್ಯ ಪಾಸ್ಕೀ',
-                
-                // Table Headers
-                'table-destination': 'ಗಮ್ಯಸ್ಥಳ',
-                'table-distance': 'ದೂರ (ಕಿ.ಮೀ)',
-                'table-cruiser': 'ಕ್ರೂಸರ್ ×16 (₹)',
-                'table-car': 'ಕಾರ್ ×14 (₹)'
-            },
-            hi: {
-                // Navigation
-                'nav-subtitle': 'यात्रा और पर्यटन',
-                'nav-home': 'होम',
-                'nav-tours': 'लग्जरी टूर',
-                'nav-rides': 'राइड बुक करें',
-                'nav-admin': 'एडमिन',
-                'nav-book-ride': 'राइड बुक करें',
-                'user-guest': 'अतिथि',
-                'current-language': 'हिंदी',
-                
-                // Mobile Menu
-                'mobile-home': 'होम',
-                'mobile-tours': 'लग्जरी टूर',
-                'mobile-rides': 'राइड बुक करें',
-                'mobile-admin': 'एडमिन',
-                
-                // Footer
-                'footer-tagline': 'आराम • सुरक्षा • विश्वसनीय यात्राएं',
-                'footer-desk': 'कॉन्सियर्ज डेस्क',
-                'footer-connect': 'कनेक्ट करें',
-                'footer-copyright': '© 2026 GAANYOGI | यात्रा और पर्यटन | सभी अधिकार abhiwebdesign.great-site.net द्वारा सुरक्षित',
-                
-                // Chat
-                'chat-title': 'गान्योगी AI',
-                'chat-subtitle': 'ट्रेवल कॉन्सियर्ज',
-                'chat-welcome': 'नमस्ते! मैं गान्योगी हूं, आपका AI ट्रेवल कॉन्सियर्ज। मैं आपकी यात्रा में कैसे मदद कर सकता हूं?',
-                'chat-placeholder': 'टूर, राइड या डेस्टिनेशन के बारे में पूछें...',
-                
-                // Home Page
-                'hero-subtitle': 'प्रीमियम ट्रेवल सेवाएं',
-                'hero-title-1': 'अपनी यात्रा को',
-                'hero-title-2': 'उन्नत करें।',
-                'hero-description': 'भारत भर में बेहतरीन चॉफर सेवाओं और क्यूरेटेड लग्जरी टूर का अनुभव करें।',
-                'hero-btn-ride': 'राइड बुक करें',
-                'hero-btn-tours': 'टूर देखें',
-                'offers-subtitle': 'फिक्स्ड रेट सेवाएं',
-                'offers-title': 'लोकप्रिय रूट',
-                'offers-description': 'प्रतिस्पर्धी दरों पर पहले से बुक किए गए रूट',
-                'book-now': 'अभी बुक करें',
-                'tours-subtitle': 'फीचर्ड एस्केप्स',
-                'tours-title': 'लोकप्रिय टूर पैकेज',
-                'tours-description': 'विवेकशील यात्रियों के लिए क्यूरेटेड अनुभव',
-                'view-all-tours': 'सभी टूर देखें',
-                'explore': 'एक्सप्लोर करें',
-                'features-eco': 'ईको-कॉन्शियस',
-                'features-eco-desc': 'हमारी सभी यात्राओं में सतत पर्यटन प्रथाएं।',
-                'features-safety': 'प्रीमियम सुरक्षा',
-                'features-safety-desc': '24/7 सत्यापित चॉफर और सुरक्षित डिजिटल भुगतान।',
-                'features-ai': 'AI कॉन्सियर्ज',
-                'features-ai-desc': 'गान्योगी AI असिस्टेंट के माध्यम से व्यक्तिगत सिफारिशें।',
-                'pricing-subtitle': 'पारदर्शी मूल्य निर्धारण',
-                'pricing-title': 'स्टैंडर्ड फेयर रेट्स',
-                'pricing-description': 'सभी रूट के लिए स्पष्ट और प्रतिस्पर्धी मूल्य',
-                'pricing-note': 'क्रूजर के लिए ₹16/किमी और कार के लिए ₹14/किमी पर दरें गणना की जाती हैं। न्यूनतम किराया लागू होता है।',
-                
-                // Rides Page
-                'rides-title': 'अपनी यात्रा बुक करें',
-                'rides-subtitle': 'भारत भर में लग्जरी चॉफर सेवाएं',
-                'rides-popular': 'लोकप्रिय रूट',
-                'pickup-label': 'पिकअप लोकेशन',
-                'pickup-placeholder': 'जैसे मुंबई एयरपोर्ट',
-                'destination-label': 'डेस्टिनेशन',
-                'destination-placeholder': 'जैसे ताज महल',
-                'calculate-fare': 'किराया गणना',
-                'calculating': 'गणना हो रही है...',
-                'distance': 'दूरी',
-                'change': 'बदलें',
-                'select-vehicle': 'वाहन चुनें',
-                'seats': 'सीटें',
-                
-                // Tours Page
-                'tours-page-subtitle': 'बेस्पोक इटिनरेरी',
-                'tours-page-title': 'क्यूरेटेड एस्केप्स',
-                'tours-page-description': 'भारत के सबसे आकर्षक डेस्टिनेशन में हैंडपिक लग्जरी टूर की खोज करें',
-                'view-details': 'विवरण देखें',
-                'back-tours': 'टूर पर वापस जाएं',
-                'tour-overview': 'अनुभव अवलोकन',
-                'tour-highlights': 'टूर हाइलाइट्स',
-                'package-price': 'पैकेज मूल्य',
-                'inclusive': 'सभी सम्मिलित • कर शामिल',
-                'tour-includes-1': 'तत्काल पुष्टि',
-                'tour-includes-2': 'सुरक्षित भुगतान गेटवे',
-                'tour-includes-3': 'विशेषज्ञ स्थानीय गाइड',
-                'tour-book-now': 'अभी बुक करें',
-                'tour-help': 'सहायता चाहिए? कॉल करें +91 7743805933',
-                
-                // Booking Page
-                'booking-title': 'अपनी बुकिंग पूरी करें',
-                'booking-subtitle': 'अपने आरक्षण को अंतिम रूप दें',
-                'full-name': 'पूरा नाम *',
-                'full-name-placeholder': 'अपना पूरा नाम दर्ज करें',
-                'phone': 'फोन *',
-                'phone-placeholder': '+91 00000 00000',
-                'total-amount': 'कुल राशि',
-                'scan-pay': 'यूपीआई के माध्यम से भुगतान करने के लिए स्कैन करें',
-                'upi-id': 'यूपीआई आईडी: 7743805933@upi',
-                'whatsapp-confirm': 'व्हाट्सएप पुष्टि',
-                'whatsapp-desc': 'भुगतान के बाद, बुकिंग पुष्टि के लिए व्हाट्सएप पर भुगतान स्क्रीनशॉट साझा करें।',
-                'payment-made': 'मैंने भुगतान कर दिया है',
-                
-                // Booking Modal
-                'confirm-ride': 'राइड अनुरोध की पुष्टि करें',
-                'ride-details': 'बुकिंग विवरण पूरा करें',
-                'passengers': 'यात्री *',
-                'confirm-send': 'पुष्टि करें और अनुरोध भेजें',
-                
-                // Admin
-                'admin-title': 'एडमिन डैशबोर्ड',
-                'admin-subtitle': 'बुकिंग प्रबंधित करें और सेवाओं की निगरानी करें',
-                'recent-bookings': 'हाल की बुकिंग',
-                'logout': 'लॉग आउट',
-                'admin-access': 'एडमिन एक्सेस',
-                'enter-passkey': 'जारी रखने के लिए पासकी दर्ज करें',
-                'passkey-placeholder': 'पासकी दर्ज करें',
-                'unlock-dashboard': 'डैशबोर्ड अनलॉक करें',
-                'customer': 'ग्राहक',
-                'service': 'सेवा',
-                'amount': 'राशि',
-                'status': 'स्थिति',
-                'date': 'तारीख',
-                'actions': 'कार्रवाइयां',
-                'confirm': 'पुष्टि करें',
-                'resend': 'पुनः भेजें',
-                'delete': 'हटाएं',
-                'loading-bookings': 'बुकिंग लोड हो रही हैं...',
-                'no-bookings': 'कोई बुकिंग नहीं मिली',
-                
-                // Toast Messages
-                'toast-location-error': 'कृपया पिकअप और डेस्टिनेशन दोनों स्थान दर्ज करें',
-                'toast-distance-success': 'दूरी गणना: {distance} किमी',
-                'toast-booking-success': 'बुकिंग सफलतापूर्वक सबमिट हुई!',
-                'toast-booking-error': 'बुकिंग प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।',
-                'toast-ride-success': 'राइड अनुरोध सफलतापूर्वक भेजा गया!',
-                'toast-confirm-success': 'बुकिंग पुष्टि हुई! व्हाट्सएप {phone} पर भेजा गया',
-                'toast-resend-success': 'पुष्टि {phone} पर पुनः भेजी गई',
-                'toast-delete-success': 'बुकिंग सफलतापूर्वक हटाई गई',
-                'toast-admin-success': 'एडमिन एक्सेस प्रदान किया गया',
-                'toast-admin-error': 'अमान्य पासकी',
-                
-                // Table Headers
-                'table-destination': 'गंतव्य',
-                'table-distance': 'दूरी (किमी)',
-                'table-cruiser': 'क्रूजर ×16 (₹)',
-                'table-car': 'कार ×14 (₹)'
-            }
-        };
-
         // Application State
         const state = {
             user: null,
             isAdminVerified: false,
             map: null,
             currentLanguage: 'en',
+            currentRoute: 'home',
             ride: {
                 step: 'INPUT',
                 pickup: '',
@@ -1039,12 +603,456 @@
             }
         ];
 
+        // Language Data
+        const translations = {
+            en: {
+                // Navigation
+                'nav-subtitle': 'Tours and Travels',
+                'nav-home': 'Home',
+                'nav-tours': 'Luxury Tours',
+                'nav-rides': 'Book Ride',
+                'nav-admin': 'Admin',
+                'nav-book-ride': 'Book Ride',
+                'user-guest': 'Guest',
+                'current-language': 'English',
+                
+                // Mobile Menu
+                'mobile-home': 'Home',
+                'mobile-tours': 'Luxury Tours',
+                'mobile-rides': 'Book Ride',
+                'mobile-admin': 'Admin',
+                
+                // Footer
+                'footer-tagline': 'Comfort • Safety • Reliable Journeys',
+                'footer-desk': 'Concierge Desk',
+                'footer-connect': 'Connect',
+                'footer-copyright': '© 2026 GAANYOGI | Tours and Travels | All rights reserved by abhiwebdesign.great-site.net',
+                
+                // Chat
+                'chat-title': 'gaanYogi AI',
+                'chat-subtitle': 'Travel Concierge',
+                'chat-welcome': 'Namaste! I am gaanYogi, your AI travel concierge. How can I assist with your journey today?',
+                'chat-placeholder': 'Ask about tours, rides, or destinations...',
+                
+                // Home Page
+                'hero-subtitle': 'Premium Travel Services',
+                'hero-title-1': 'Elevate Your',
+                'hero-title-2': 'Journey.',
+                'hero-description': 'Experience the finest chauffeur services and curated luxury tours across India.',
+                'hero-btn-ride': 'Book Ride',
+                'hero-btn-tours': 'View Tours',
+                'offers-subtitle': 'Fixed Rate Services',
+                'offers-title': 'Popular Routes',
+                'offers-description': 'Pre-booked routes at competitive rates',
+                'book-now': 'Book Now',
+                'tours-subtitle': 'Featured Escapes',
+                'tours-title': 'Popular Tour Packages',
+                'tours-description': 'Curated experiences for discerning travelers',
+                'view-all-tours': 'View All Tours',
+                'explore': 'Explore',
+                'features-eco': 'Eco-Conscious',
+                'features-eco-desc': 'Sustainable tourism practices across all our journeys.',
+                'features-safety': 'Premium Safety',
+                'features-safety-desc': '24/7 verified chauffeurs and secure digital payments.',
+                'features-ai': 'AI Concierge',
+                'features-ai-desc': 'Personalized recommendations via gaanYogi AI assistant.',
+                'pricing-subtitle': 'Transparent Pricing',
+                'pricing-title': 'Standard Fare Rates',
+                'pricing-description': 'Clear and competitive pricing for all routes',
+                'pricing-note': 'Rates are calculated at ₹16/km for Cruiser and ₹14/km for Car. Minimum fare applies.',
+                
+                // Rides Page
+                'rides-title': 'Book Your Journey',
+                'rides-subtitle': 'Luxury chauffeur services across India',
+                'rides-popular': 'Popular Routes',
+                'pickup-label': 'Pickup Location',
+                'pickup-placeholder': 'e.g. Mumbai Airport',
+                'destination-label': 'Destination',
+                'destination-placeholder': 'e.g. Taj Mahal',
+                'calculate-fare': 'Calculate Fare',
+                'calculating': 'Calculating...',
+                'distance': 'Distance',
+                'change': 'Change',
+                'select-vehicle': 'Select Vehicle',
+                'seats': 'Seats',
+                
+                // Tours Page
+                'tours-page-subtitle': 'Bespoke Itineraries',
+                'tours-page-title': 'Curated Escapes',
+                'tours-page-description': 'Discover handpicked luxury tours across India\'s most breathtaking destinations',
+                'view-details': 'View Details',
+                'back-tours': 'Back to Tours',
+                'tour-overview': 'Experience Overview',
+                'tour-highlights': 'Tour Highlights',
+                'package-price': 'Package Price',
+                'inclusive': 'All inclusive • Taxes included',
+                'tour-includes-1': 'Instant Confirmation',
+                'tour-includes-2': 'Secure Payment Gateway',
+                'tour-includes-3': 'Expert Local Guide',
+                'tour-book-now': 'Book Now',
+                'tour-help': 'Need help? Call +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'Complete Your Booking',
+                'booking-subtitle': 'Finalize your reservation for',
+                'full-name': 'Full Name *',
+                'full-name-placeholder': 'Enter your full name',
+                'phone': 'Phone *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'Total Amount',
+                'scan-pay': 'Scan to Pay via UPI',
+                'upi-id': 'UPI ID: 7743805933@upi',
+                'whatsapp-confirm': 'WhatsApp Confirmation',
+                'whatsapp-desc': 'After payment, share payment screenshot on WhatsApp for booking confirmation.',
+                'payment-made': 'I Have Made the Payment',
+                
+                // Booking Modal
+                'confirm-ride': 'Confirm Ride Request',
+                'ride-details': 'Complete booking details',
+                'passengers': 'Passengers *',
+                'confirm-send': 'Confirm & Send Request',
+                
+                // Admin
+                'admin-title': 'Admin Dashboard',
+                'admin-subtitle': 'Manage bookings and monitor services',
+                'recent-bookings': 'Recent Bookings',
+                'logout': 'Logout',
+                'admin-access': 'Admin Access',
+                'enter-passkey': 'Enter passkey to continue',
+                'passkey-placeholder': 'Enter Passkey',
+                'unlock-dashboard': 'Unlock Dashboard',
+                'customer': 'Customer',
+                'service': 'Service',
+                'amount': 'Amount',
+                'status': 'Status',
+                'date': 'Date',
+                'actions': 'Actions',
+                'confirm': 'Confirm',
+                'resend': 'Resend',
+                'delete': 'Delete',
+                'loading-bookings': 'Loading bookings...',
+                'no-bookings': 'No bookings found',
+                
+                // Toast Messages
+                'toast-location-error': 'Please enter both pickup and destination locations',
+                'toast-distance-success': 'Distance calculated: {distance} km',
+                'toast-booking-success': 'Booking submitted successfully!',
+                'toast-booking-error': 'Error processing booking. Please try again.',
+                'toast-ride-success': 'Ride request sent successfully!',
+                'toast-confirm-success': 'Booking confirmed! WhatsApp sent to {phone}',
+                'toast-resend-success': 'Confirmation resent to {phone}',
+                'toast-delete-success': 'Booking deleted successfully',
+                'toast-admin-success': 'Admin access granted',
+                'toast-admin-error': 'Invalid passkey',
+                'toast-language-changed': 'Language changed to {language}',
+                
+                // Table Headers
+                'table-destination': 'Destination',
+                'table-distance': 'Distance (km)',
+                'table-cruiser': 'Cruiser ×16 (₹)',
+                'table-car': 'Car ×14 (₹)'
+            },
+            kn: {
+                // Navigation
+                'nav-subtitle': 'ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ',
+                'nav-home': 'ಮುಖಪುಟ',
+                'nav-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
+                'nav-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'nav-admin': 'ನಿರ್ವಾಹಕ',
+                'nav-book-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'user-guest': 'ಅತಿಥಿ',
+                'current-language': 'ಕನ್ನಡ',
+                
+                // Mobile Menu
+                'mobile-home': 'ಮುಖಪುಟ',
+                'mobile-tours': 'ವಿಲಾಸಿ ಪ್ರವಾಸಗಳು',
+                'mobile-rides': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'mobile-admin': 'ನಿರ್ವಾಹಕ',
+                
+                // Footer
+                'footer-tagline': 'ಆರಾಮ • ಸುರಕ್ಷತೆ • ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಯಾಣಗಳು',
+                'footer-desk': 'ಕಾನ್ಸಿರ್ಜ್ ಡೆಸ್ಕ್',
+                'footer-connect': 'ಸಂಪರ್ಕಿಸಿ',
+                'footer-copyright': '© 2026 GAANYOGI | ಪ್ರವಾಸ ಮತ್ತು ಪ್ರಯಾಣ | ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು abhiwebdesign.great-site.net ರಕ್ಷಿಸಲಾಗಿದೆ',
+                
+                // Chat
+                'chat-title': 'ಗಾನ್ಯೋಗಿ AI',
+                'chat-subtitle': 'ಪ್ರಯಾಣ ಸಹಾಯಕ',
+                'chat-welcome': 'ನಮಸ್ಕಾರ! ನಾನು ಗಾನ್ಯೋಗಿ, ನಿಮ್ಮ AI ಪ್ರಯಾಣ ಸಹಾಯಕ. ನಿಮ್ಮ ಪ್ರಯಾಣದ ಬಗ್ಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?',
+                'chat-placeholder': 'ಪ್ರವಾಸಗಳು, ರೈಡ್ಗಳು ಅಥವಾ ಗಮ್ಯಸ್ಥಳಗಳ ಬಗ್ಗೆ ಕೇಳಿ...',
+                
+                // Home Page
+                'hero-subtitle': 'ಪ್ರೀಮಿಯಂ ಪ್ರಯಾಣ ಸೇವೆಗಳು',
+                'hero-title-1': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು',
+                'hero-title-2': 'ಉನ್ನತಗೊಳಿಸಿ.',
+                'hero-description': 'ಭಾರತದಾದ್ಯಂತ ಅತ್ಯುತ್ತಮ ಚಾಫರ್ಸ್ ಸೇವೆಗಳು ಮತ್ತು ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳ ಅನುಭವ.',
+                'hero-btn-ride': 'ರೈಡ್ ಬುಕ್ ಮಾಡಿ',
+                'hero-btn-tours': 'ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'offers-subtitle': 'ಸ್ಥಿರ ದರ ಸೇವೆಗಳು',
+                'offers-title': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
+                'offers-description': 'ಸ್ಪರ್ಧಾತ್ಮಕ ದರಗಳಲ್ಲಿ ಮುಂಚಿತವಾಗಿ ಬುಕ್ ಮಾಡಲಾದ ಮಾರ್ಗಗಳು',
+                'book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
+                'tours-subtitle': 'ವಿಶೇಷ ಎಸ್ಕೇಪ್ಗಳು',
+                'tours-title': 'ಜನಪ್ರಿಯ ಟೂರ್ ಪ್ಯಾಕೇಜ್ಗಳು',
+                'tours-description': 'ವಿವೇಚನಾಶೀಲ ಪ್ರಯಾಣಿಕರಿಗಾಗಿ ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಅನುಭವಗಳು',
+                'view-all-tours': 'ಎಲ್ಲಾ ಪ್ರವಾಸಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'explore': 'ಅನ್ವೇಷಿಸಿ',
+                'features-eco': 'ಪರಿಸರ ಸ್ನೇಹಿ',
+                'features-eco-desc': 'ನಮ್ಮ ಎಲ್ಲಾ ಪ್ರಯಾಣಗಳಲ್ಲಿ ಸುಸ್ಥಿರ ಪ್ರವಾಸೋದ್ಯಮ ಪದ್ಧತಿಗಳು.',
+                'features-safety': 'ಪ್ರೀಮಿಯಂ ಸುರಕ್ಷತೆ',
+                'features-safety-desc': '24/7 ಪರಿಶೀಲಿಸಲಾದ ಚಾಫರ್ಗಳು ಮತ್ತು ಸುರಕ್ಷಿತ ಡಿಜಿಟಲ್ ಪೇಮೆಂಟ್ಗಳು.',
+                'features-ai': 'AI ಸಹಾಯಕ',
+                'features-ai-desc': 'ಗಾನ್ಯೋಗಿ AI ಸಹಾಯಕದ ಮೂಲಕ ವೈಯಕ್ತಿಕಗೊಳಿಸಲಾದ ಶಿಫಾರಸುಗಳು.',
+                'pricing-subtitle': 'ಪಾರದರ್ಶಕ ಬೆಲೆ ನಿಗದಿ',
+                'pricing-title': 'ಪ್ರಮಾಣಿತ ದರಗಳು',
+                'pricing-description': 'ಎಲ್ಲಾ ಮಾರ್ಗಗಳಿಗೆ ಸ್ಪಷ್ಟ ಮತ್ತು ಸ್ಪರ್ಧಾತ್ಮಕ ಬೆಲೆಗಳು',
+                'pricing-note': 'ದರಗಳನ್ನು ಕ್ರೂಸರ್ಗೆ ₹16/ಕಿ.ಮೀ ಮತ್ತು ಕಾರಿಗೆ ₹14/ಕಿ.ಮೀ ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತದೆ. ಕನಿಷ್ಠ ದರ ಅನ್ವಯಿಸುತ್ತದೆ.',
+                
+                // Rides Page
+                'rides-title': 'ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಬುಕ್ ಮಾಡಿ',
+                'rides-subtitle': 'ಭಾರತದಾದ್ಯಂತ ಲಕ್ಸರಿ ಚಾಫರ್ ಸೇವೆಗಳು',
+                'rides-popular': 'ಜನಪ್ರಿಯ ಮಾರ್ಗಗಳು',
+                'pickup-label': 'ಪಿಕಪ್ ಸ್ಥಳ',
+                'pickup-placeholder': 'ಉದಾ. ಮುಂಬೈ ವಿಮಾನ ನಿಲ್ದಾಣ',
+                'destination-label': 'ಗಮ್ಯಸ್ಥಳ',
+                'destination-placeholder': 'ಉದಾ. ತಾಜ್ ಮಹಲ್',
+                'calculate-fare': 'ದರ ಲೆಕ್ಕಾಚಾರ',
+                'calculating': 'ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+                'distance': 'ದೂರ',
+                'change': 'ಬದಲಾಯಿಸಿ',
+                'select-vehicle': 'ವಾಹನ ಆಯ್ಕೆಮಾಡಿ',
+                'seats': 'ಆಸನಗಳು',
+                
+                // Tours Page
+                'tours-page-subtitle': 'ವಿಶೇಷ ಇಟಿನರರಿಗಳು',
+                'tours-page-title': 'ಕ್ಯೂರೇಟ್ ಮಾಡಲಾದ ಎಸ್ಕೇಪ್ಗಳು',
+                'tours-page-description': 'ಭಾರತದ ಅತ್ಯಂತ ಆಕರ್ಷಕ ಗಮ್ಯಸ್ಥಳಗಳಾದ್ಯಂತ ಹ್ಯಾಂಡ್ ಪಿಕ್ ಮಾಡಲಾದ ಲಕ್ಸರಿ ಟೂರ್ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ',
+                'view-details': 'ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+                'back-tours': 'ಪ್ರವಾಸಗಳಿಗೆ ಹಿಂತಿರುಗಿ',
+                'tour-overview': 'ಅನುಭವ ಅವಲೋಕನ',
+                'tour-highlights': 'ಪ್ರವಾಸದ ಮುಖ್ಯಾಂಶಗಳು',
+                'package-price': 'ಪ್ಯಾಕೇಜ್ ಬೆಲೆ',
+                'inclusive': 'ಎಲ್ಲಾ ಸೇರಿದೆ • ತೆರಿಗೆಗಳು ಸೇರಿದೆ',
+                'tour-includes-1': 'ತ್ವರಿತ ದೃಢೀಕರಣ',
+                'tour-includes-2': 'ಸುರಕ್ಷಿತ ಪೇಮೆಂಟ್ ಗೇಟ್ವೇ',
+                'tour-includes-3': 'ತಜ್ಞ ಸ್ಥಳೀಯ ಮಾರ್ಗದರ್ಶಿ',
+                'tour-book-now': 'ಈಗ ಬುಕ್ ಮಾಡಿ',
+                'tour-help': 'ಸಹಾಯ ಬೇಕೇ? ಕರೆ ಮಾಡಿ +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'ನಿಮ್ಮ ಬುಕಿಂಗ್ ಪೂರ್ಣಗೊಳಿಸಿ',
+                'booking-subtitle': 'ನಿಮ್ಮ ಕಾಯ್ದಿರಿಸುವಿಕೆಯನ್ನು ಅಂತಿಮಗೊಳಿಸಿ',
+                'full-name': 'ಪೂರ್ಣ ಹೆಸರು *',
+                'full-name-placeholder': 'ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',
+                'phone': 'ಫೋನ್ *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'ಒಟ್ಟು ಮೊತ್ತ',
+                'scan-pay': 'ಯುಪಿಐ ಮೂಲಕ ಪಾವತಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ',
+                'upi-id': 'ಯುಪಿಐ ಐಡಿ: 7743805933@upi',
+                'whatsapp-confirm': 'ವಾಟ್ಸಾಪ್ ದೃಢೀಕರಣ',
+                'whatsapp-desc': 'ಪಾವತಿಯ ನಂತರ, ಬುಕಿಂಗ್ ದೃಢೀಕರಣಕ್ಕಾಗಿ ವಾಟ್ಸಾಪ್ನಲ್ಲಿ ಪಾವತಿ ಸ್ಕ್ರೀನ್ಶಾಟ್ ಹಂಚಿಕೊಳ್ಳಿ.',
+                'payment-made': 'ನಾನು ಪಾವತಿ ಮಾಡಿದ್ದೇನೆ',
+                
+                // Booking Modal
+                'confirm-ride': 'ರೈಡ್ ವಿನಂತಿಯನ್ನು ದೃಢೀಕರಿಸಿ',
+                'ride-details': 'ಬುಕಿಂಗ್ ವಿವರಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ',
+                'passengers': 'ಪ್ರಯಾಣಿಕರು *',
+                'confirm-send': 'ದೃಢೀಕರಿಸಿ ಮತ್ತು ವಿನಂತಿ ಕಳುಹಿಸಿ',
+                
+                // Admin
+                'admin-title': 'ನಿರ್ವಾಹಕ ಡ್ಯಾಶ್ಬೋರ್ಡ್',
+                'admin-subtitle': 'ಬುಕಿಂಗ್ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಸೇವೆಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ',
+                'recent-bookings': 'ಇತ್ತೀಚಿನ ಬುಕಿಂಗ್ಗಳು',
+                'logout': 'ಲಾಗ್ ಔಟ್',
+                'admin-access': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ',
+                'enter-passkey': 'ಮುಂದುವರೆಯಲು ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
+                'passkey-placeholder': 'ಪಾಸ್ಕೀ ನಮೂದಿಸಿ',
+                'unlock-dashboard': 'ಡ್ಯಾಶ್ಬೋರ್ಡ್ ಅನ್ಲಾಕ್ ಮಾಡಿ',
+                'customer': 'ಗ್ರಾಹಕ',
+                'service': 'ಸೇವೆ',
+                'amount': 'ಮೊತ್ತ',
+                'status': 'ಸ್ಥಿತಿ',
+                'date': 'ದಿನಾಂಕ',
+                'actions': 'ಕ್ರಿಯೆಗಳು',
+                'confirm': 'ದೃಢೀಕರಿಸಿ',
+                'resend': 'ಮರುಕಳುಹಿಸಿ',
+                'delete': 'ಅಳಿಸಿ',
+                'loading-bookings': 'ಬುಕಿಂಗ್ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...',
+                'no-bookings': 'ಬುಕಿಂಗ್ಗಳು ಕಂಡುಬಂದಿಲ್ಲ',
+                
+                // Toast Messages
+                'toast-location-error': 'ದಯವಿಟ್ಟು ಪಿಕಪ್ ಮತ್ತು ಗಮ್ಯಸ್ಥಳ ಎರಡನ್ನೂ ನಮೂದಿಸಿ',
+                'toast-distance-success': 'ದೂರ ಲೆಕ್ಕಾಚಾರ: {distance} ಕಿ.ಮೀ',
+                'toast-booking-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!',
+                'toast-booking-error': 'ಬುಕಿಂಗ್ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+                'toast-ride-success': 'ರೈಡ್ ವಿನಂತಿ ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ!',
+                'toast-confirm-success': 'ಬುಕಿಂಗ್ ದೃಢೀಕರಿಸಲಾಗಿದೆ! ವಾಟ್ಸಾಪ್ {phone} ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ',
+                'toast-resend-success': 'ದೃಢೀಕರಣ {phone} ಗೆ ಮರುಕಳುಹಿಸಲಾಗಿದೆ',
+                'toast-delete-success': 'ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ',
+                'toast-admin-success': 'ನಿರ್ವಾಹಕ ಪ್ರವೇಶ ಮಂಜೂರಾಗಿದೆ',
+                'toast-admin-error': 'ಅಮಾನ್ಯ ಪಾಸ್ಕೀ',
+                'toast-language-changed': 'ಭಾಷೆ {language} ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+                
+                // Table Headers
+                'table-destination': 'ಗಮ್ಯಸ್ಥಳ',
+                'table-distance': 'ದೂರ (ಕಿ.ಮೀ)',
+                'table-cruiser': 'ಕ್ರೂಸರ್ ×16 (₹)',
+                'table-car': 'ಕಾರ್ ×14 (₹)'
+            },
+            hi: {
+                // Navigation
+                'nav-subtitle': 'यात्रा और पर्यटन',
+                'nav-home': 'होम',
+                'nav-tours': 'लग्जरी टूर',
+                'nav-rides': 'राइड बुक करें',
+                'nav-admin': 'एडमिन',
+                'nav-book-ride': 'राइड बुक करें',
+                'user-guest': 'अतिथि',
+                'current-language': 'हिंदी',
+                
+                // Mobile Menu
+                'mobile-home': 'होम',
+                'mobile-tours': 'लग्जरी टूर',
+                'mobile-rides': 'राइड बुक करें',
+                'mobile-admin': 'एडमिन',
+                
+                // Footer
+                'footer-tagline': 'आराम • सुरक्षा • विश्वसनीय यात्राएं',
+                'footer-desk': 'कॉन्सियर्ज डेस्क',
+                'footer-connect': 'कनेक्ट करें',
+                'footer-copyright': '© 2026 GAANYOGI | यात्रा और पर्यटन | सभी अधिकार abhiwebdesign.great-site.net द्वारा सुरक्षित',
+                
+                // Chat
+                'chat-title': 'गान्योगी AI',
+                'chat-subtitle': 'ट्रेवल कॉन्सियर्ज',
+                'chat-welcome': 'नमस्ते! मैं गान्योगी हूं, आपका AI ट्रेवल कॉन्सियर्ज। मैं आपकी यात्रा में कैसे मदद कर सकता हूं?',
+                'chat-placeholder': 'टूर, राइड या डेस्टिनेशन के बारे में पूछें...',
+                
+                // Home Page
+                'hero-subtitle': 'प्रीमियम ट्रेवल सेवाएं',
+                'hero-title-1': 'अपनी यात्रा को',
+                'hero-title-2': 'उन्नत करें।',
+                'hero-description': 'भारत भर में बेहतरीन चॉफर सेवाओं और क्यूरेटेड लग्जरी टूर का अनुभव करें।',
+                'hero-btn-ride': 'राइड बुक करें',
+                'hero-btn-tours': 'टूर देखें',
+                'offers-subtitle': 'फिक्स्ड रेट सेवाएं',
+                'offers-title': 'लोकप्रिय रूट',
+                'offers-description': 'प्रतिस्पर्धी दरों पर पहले से बुक किए गए रूट',
+                'book-now': 'अभी बुक करें',
+                'tours-subtitle': 'फीचर्ड एस्केप्स',
+                'tours-title': 'लोकप्रिय टूर पैकेज',
+                'tours-description': 'विवेकशील यात्रियों के लिए क्यूरेटेड अनुभव',
+                'view-all-tours': 'सभी टूर देखें',
+                'explore': 'एक्सप्लोर करें',
+                'features-eco': 'ईको-कॉन्शियस',
+                'features-eco-desc': 'हमारी सभी यात्राओं में सतत पर्यटन प्रथाएं।',
+                'features-safety': 'प्रीमियम सुरक्षा',
+                'features-safety-desc': '24/7 सत्यापित चॉफर और सुरक्षित डिजिटल भुगतान।',
+                'features-ai': 'AI कॉन्सियर्ज',
+                'features-ai-desc': 'गान्योगी AI असिस्टेंट के माध्यम से व्यक्तिगत सिफारिशें।',
+                'pricing-subtitle': 'पारदर्शी मूल्य निर्धारण',
+                'pricing-title': 'स्टैंडर्ड फेयर रेट्स',
+                'pricing-description': 'सभी रूट के लिए स्पष्ट और प्रतिस्पर्धी मूल्य',
+                'pricing-note': 'क्रूजर के लिए ₹16/किमी और कार के लिए ₹14/किमी पर दरें गणना की जाती हैं। न्यूनतम किराया लागू होता है।',
+                
+                // Rides Page
+                'rides-title': 'अपनी यात्रा बुक करें',
+                'rides-subtitle': 'भारत भर में लग्जरी चॉफर सेवाएं',
+                'rides-popular': 'लोकप्रिय रूट',
+                'pickup-label': 'पिकअप लोकेशन',
+                'pickup-placeholder': 'जैसे मुंबई एयरपोर्ट',
+                'destination-label': 'डेस्टिनेशन',
+                'destination-placeholder': 'जैसे ताज महल',
+                'calculate-fare': 'किराया गणना',
+                'calculating': 'गणना हो रही है...',
+                'distance': 'दूरी',
+                'change': 'बदलें',
+                'select-vehicle': 'वाहन चुनें',
+                'seats': 'सीटें',
+                
+                // Tours Page
+                'tours-page-subtitle': 'बेस्पोक इटिनरेरी',
+                'tours-page-title': 'क्यूरेटेड एस्केप्स',
+                'tours-page-description': 'भारत के सबसे आकर्षक डेस्टिनेशन में हैंडपिक लग्जरी टूर की खोज करें',
+                'view-details': 'विवरण देखें',
+                'back-tours': 'टूर पर वापस जाएं',
+                'tour-overview': 'अनुभव अवलोकन',
+                'tour-highlights': 'टूर हाइलाइट्स',
+                'package-price': 'पैकेज मूल्य',
+                'inclusive': 'सभी सम्मिलित • कर शामिल',
+                'tour-includes-1': 'तत्काल पुष्टि',
+                'tour-includes-2': 'सुरक्षित भुगतान गेटवे',
+                'tour-includes-3': 'विशेषज्ञ स्थानीय गाइड',
+                'tour-book-now': 'अभी बुक करें',
+                'tour-help': 'सहायता चाहिए? कॉल करें +91 7743805933',
+                
+                // Booking Page
+                'booking-title': 'अपनी बुकिंग पूरी करें',
+                'booking-subtitle': 'अपने आरक्षण को अंतिम रूप दें',
+                'full-name': 'पूरा नाम *',
+                'full-name-placeholder': 'अपना पूरा नाम दर्ज करें',
+                'phone': 'फोन *',
+                'phone-placeholder': '+91 00000 00000',
+                'total-amount': 'कुल राशि',
+                'scan-pay': 'यूपीआई के माध्यम से भुगतान करने के लिए स्कैन करें',
+                'upi-id': 'यूपीआई आईडी: 7743805933@upi',
+                'whatsapp-confirm': 'व्हाट्सएप पुष्टि',
+                'whatsapp-desc': 'भुगतान के बाद, बुकिंग पुष्टि के लिए व्हाट्सएप पर भुगतान स्क्रीनशॉट साझा करें।',
+                'payment-made': 'मैंने भुगतान कर दिया है',
+                
+                // Booking Modal
+                'confirm-ride': 'राइड अनुरोध की पुष्टि करें',
+                'ride-details': 'बुकिंग विवरण पूरा करें',
+                'passengers': 'यात्री *',
+                'confirm-send': 'पुष्टि करें और अनुरोध भेजें',
+                
+                // Admin
+                'admin-title': 'एडमिन डैशबोर्ड',
+                'admin-subtitle': 'बुकिंग प्रबंधित करें और सेवाओं की निगरानी करें',
+                'recent-bookings': 'हाल की बुकिंग',
+                'logout': 'लॉग आउट',
+                'admin-access': 'एडमिन एक्सेस',
+                'enter-passkey': 'जारी रखने के लिए पासकी दर्ज करें',
+                'passkey-placeholder': 'पासकी दर्ज करें',
+                'unlock-dashboard': 'डैशबोर्ड अनलॉक करें',
+                'customer': 'ग्राहक',
+                'service': 'सेवा',
+                'amount': 'राशि',
+                'status': 'स्थिति',
+                'date': 'तारीख',
+                'actions': 'कार्रवाइयां',
+                'confirm': 'पुष्टि करें',
+                'resend': 'पुनः भेजें',
+                'delete': 'हटाएं',
+                'loading-bookings': 'बुकिंग लोड हो रही हैं...',
+                'no-bookings': 'कोई बुकिंग नहीं मिली',
+                
+                // Toast Messages
+                'toast-location-error': 'कृपया पिकअप और डेस्टिनेशन दोनों स्थान दर्ज करें',
+                'toast-distance-success': 'दूरी गणना: {distance} किमी',
+                'toast-booking-success': 'बुकिंग सफलतापूर्वक सबमिट हुई!',
+                'toast-booking-error': 'बुकिंग प्रोसेस करने में त्रुटि। कृपया पुनः प्रयास करें।',
+                'toast-ride-success': 'राइड अनुरोध सफलतापूर्वक भेजा गया!',
+                'toast-confirm-success': 'बुकिंग पुष्टि हुई! व्हाट्सएप {phone} पर भेजा गया',
+                'toast-resend-success': 'पुष्टि {phone} पर पुनः भेजी गई',
+                'toast-delete-success': 'बुकिंग सफलतापूर्वक हटाई गई',
+                'toast-admin-success': 'एडमिन एक्सेस प्रदान किया गया',
+                'toast-admin-error': 'अमान्य पासकी',
+                'toast-language-changed': 'भाषा {language} में बदली गई',
+                
+                // Table Headers
+                'table-destination': 'गंतव्य',
+                'table-distance': 'दूरी (किमी)',
+                'table-cruiser': 'क्रूजर ×16 (₹)',
+                'table-car': 'कार ×14 (₹)'
+            }
+        };
+
         // Language Functions
         function getTranslation(key, params = {}) {
             const lang = state.currentLanguage;
             let text = translations[lang][key] || translations['en'][key] || key;
             
-            // Replace parameters
             Object.keys(params).forEach(param => {
                 text = text.replace(`{${param}}`, params[param]);
             });
@@ -1053,7 +1061,6 @@
         }
 
         function updateAllText() {
-            // Update all elements with data-translate attribute
             document.querySelectorAll('[id]').forEach(element => {
                 const id = element.id;
                 if (translations[state.currentLanguage][id]) {
@@ -1065,21 +1072,17 @@
                 }
             });
             
-            // Update chat input placeholder
             const chatInput = document.getElementById('chat-input');
             if (chatInput) {
                 chatInput.placeholder = getTranslation('chat-placeholder');
             }
             
-            // Update current language display
             const currentLangElement = document.getElementById('current-language');
             if (currentLangElement) {
                 currentLangElement.textContent = getTranslation('current-language');
             }
             
-            // Re-render current page with new language
-            const currentRoute = window.currentRoute || 'home';
-            router.navigate(currentRoute);
+            router.navigate(state.currentRoute);
         }
 
         function changeLanguage(lang) {
@@ -1095,7 +1098,6 @@
                 await signInAnonymously(auth);
             } catch (error) {
                 console.log("Auth:", error);
-                showToast("Authentication error", "error");
             }
             
             onAuthStateChanged(auth, (user) => {
@@ -1115,7 +1117,7 @@
             navigate: (route, params) => {
                 const root = document.getElementById('app-root');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                window.currentRoute = route;
+                state.currentRoute = route;
                 
                 const mobileMenu = document.getElementById('mobile-menu');
                 if (mobileMenu) {
@@ -1445,7 +1447,7 @@
                                 <h3 class="text-xs font-bold text-midnight uppercase tracking-widest mb-4">${getTranslation('select-vehicle')}</h3>
                                 <div class="space-y-4">
                                     ${VEHICLES.map(v => {
-                                        const fare = Math.round(distance * v.rate);
+                                        const fare = state.ride.fixedPrice || Math.round(distance * v.rate);
                                         const colorClass = v.color === 'electric' ? 'border-electric/30 hover:border-electric' : 
                                                           v.color === 'sunset' ? 'border-sunset/30 hover:border-sunset' : 
                                                           'border-melon/30 hover:border-melon';
@@ -1666,7 +1668,7 @@
                                 </div>
                                 <div class="text-center">
                                     <p class="text-sm font-bold text-midnight mb-3">${getTranslation('scan-pay')}</p>
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=7743805933@upi&pn=Gaanyogi&am=${total}&cu=INR&tn=Tour%20Booking%20${tour.title}" 
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=7743805933@upi&pn=Gaanyogi&am=${total}&cu=INR&tn=Tour%20Booking%20${encodeURIComponent(tour.title)}" 
                                          class="w-40 h-40 mx-auto rounded-lg mb-3 border border-electric/20"
                                          alt="UPI QR Code">
                                     <p class="text-xs text-slate">${getTranslation('upi-id')}</p>
@@ -1700,7 +1702,7 @@
                             </div>
                             <h2 class="font-serif text-2xl text-midnight mb-2 text-center">${getTranslation('admin-access')}</h2>
                             <p class="text-slate text-sm text-center mb-6">${getTranslation('enter-passkey')}</p>
-                            <form onsubmit="handleAdminLogin(event)">
+                            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                                 <input type="password" id="admin-password-input" 
                                        class="w-full bg-cream border border-electric/20 rounded-xl p-4 text-midnight text-center mb-4 focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none mobile-tap" 
                                        placeholder="${getTranslation('passkey-placeholder')}" 
@@ -1760,89 +1762,6 @@
                 </div>`;
             
             loadAdminBookings();
-        }
-
-        function renderBookingModal() {
-            const v = state.ride.selectedVehicle;
-            const isFixed = !!state.ride.fixedPrice;
-            const fare = state.ride.fixedPrice || Math.round(state.ride.distance * v.rate);
-            
-            const modalHTML = `
-            <div class="fixed inset-0 z-[80] flex items-end md:items-center justify-center p-4 animate-fade-in">
-                <div class="absolute inset-0 bg-midnight/70 backdrop-blur-sm" onclick="closeBookingModal()"></div>
-                <div class="relative w-full md:max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8 animate-slide-in max-h-[90vh] overflow-y-auto hide-scrollbar">
-                    <button onclick="closeBookingModal()" 
-                            class="absolute right-4 top-4 text-slate hover:text-electric mobile-tap">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                    
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
-                             alt="GAANYOGI Logo" 
-                             class="logo-img w-10 h-10 object-contain">
-                        <div>
-                            <h2 class="text-xl font-serif text-midnight mb-1">${getTranslation('confirm-ride')}</h2>
-                            <p class="text-slate text-sm">${getTranslation('ride-details')}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-4 bg-cream p-4 rounded-xl mb-6 border border-electric/20">
-                        <div class="w-20 h-16 rounded-lg overflow-hidden">
-                            <img src="${v.img}" class="w-full h-full object-cover" alt="${v.name}">
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-midnight font-bold text-sm">${v.name}</h3>
-                            <p class="text-sunset font-bold text-sm">₹${fare.toLocaleString()}</p>
-                            <p class="text-slate text-xs">${isFixed ? 'Fixed Price Offer' : `${state.ride.distance.toFixed(1)} km × ₹${v.rate}/km`}</p>
-                        </div>
-                    </div>
-
-                    <form onsubmit="submitRideBooking(event)" class="space-y-4">
-                        <div>
-                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('full-name')}</label>
-                            <input name="customerName" required 
-                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
-                                   placeholder="${getTranslation('                                   placeholder="${getTranslation('full-name-placeholder')}">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('phone')}</label>
-                            <input name="customerPhone" type="tel" required 
-                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
-                                   placeholder="${getTranslation('phone-placeholder')}">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('passengers')}</label>
-                            <input name="passengerCount" type="number" min="1" max="${v.seats}" required 
-                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
-                                   placeholder="1 to ${v.seats}" value="1">
-                        </div>
-                        ${!isFixed ? `
-                        <div class="bg-teagreen/10 p-4 rounded-lg border border-teagreen/30">
-                            <div class="flex justify-between text-sm text-slate mb-2">
-                                <span>${getTranslation('pickup-label')}:</span>
-                                <span class="font-bold text-midnight">${state.ride.pickup}</span>
-                            </div>
-                            <div class="flex justify-between text-sm text-slate">
-                                <span>${getTranslation('destination-label')}:</span>
-                                <span class="font-bold text-midnight">${state.ride.drop}</span>
-                            </div>
-                        </div>
-                        ` : ''}
-                        
-                        <div class="pt-4">
-                            <button type="submit" 
-                                    class="w-full gradient-sunset text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition shadow-lg mobile-tap">
-                                <i class="fa-solid fa-paper-plane mr-2"></i>${getTranslation('confirm-send')}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>`;
-            
-            const modalContainer = document.getElementById('modal-container');
-            if (modalContainer) {
-                modalContainer.innerHTML = modalHTML;
-            }
         }
 
         // UI Functions
@@ -1918,9 +1837,7 @@
             state.ride.drop = drop;
             state.ride.loading = true;
             
-            // Simulate distance calculation (in real app, use Google Maps API)
             setTimeout(() => {
-                // Mock distance calculation based on input
                 const mockDistance = 40 + Math.random() * 200;
                 state.ride.distance = mockDistance;
                 state.ride.step = 'LIST';
@@ -1962,6 +1879,89 @@
 
         function closeBookingModal() {
             document.getElementById('modal-container').innerHTML = '';
+        }
+
+        function renderBookingModal() {
+            const v = state.ride.selectedVehicle;
+            const isFixed = !!state.ride.fixedPrice;
+            const fare = state.ride.fixedPrice || Math.round(state.ride.distance * v.rate);
+            
+            const modalHTML = `
+            <div class="modal-overlay fixed inset-0 z-[80] flex items-end md:items-center justify-center p-4">
+                <div class="absolute inset-0 bg-midnight/70 backdrop-blur-sm" onclick="closeBookingModal()"></div>
+                <div class="modal-content relative w-full md:max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto hide-scrollbar pointer-events-auto">
+                    <button onclick="closeBookingModal()" 
+                            class="absolute right-4 top-4 text-slate hover:text-electric mobile-tap">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkxu33iPyC1P4owLKMzPJb_c-8P7p37rV01g&s" 
+                             alt="GAANYOGI Logo" 
+                             class="logo-img w-10 h-10 object-contain">
+                        <div>
+                            <h2 class="text-xl font-serif text-midnight mb-1">${getTranslation('confirm-ride')}</h2>
+                            <p class="text-slate text-sm">${getTranslation('ride-details')}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 bg-cream p-4 rounded-xl mb-6 border border-electric/20">
+                        <div class="w-20 h-16 rounded-lg overflow-hidden">
+                            <img src="${v.img}" class="w-full h-full object-cover" alt="${v.name}">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-midnight font-bold text-sm">${v.name}</h3>
+                            <p class="text-sunset font-bold text-sm">₹${fare.toLocaleString()}</p>
+                            <p class="text-slate text-xs">${isFixed ? 'Fixed Price Offer' : `${state.ride.distance.toFixed(1)} km × ₹${v.rate}/km`}</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="submitRideBooking(event)" class="space-y-4">
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('full-name')}</label>
+                            <input name="customerName" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="${getTranslation('full-name-placeholder')}">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('phone')}</label>
+                            <input name="customerPhone" type="tel" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="${getTranslation('phone-placeholder')}">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate uppercase font-bold tracking-wider mb-2 block">${getTranslation('passengers')}</label>
+                            <input name="passengerCount" type="number" min="1" max="${v.seats}" required 
+                                   class="w-full bg-cream border border-electric/20 rounded-lg p-3 text-midnight focus:border-electric focus:ring-2 focus:ring-electric/20 outline-none text-sm mobile-tap" 
+                                   placeholder="1 to ${v.seats}" value="1">
+                        </div>
+                        ${!isFixed ? `
+                        <div class="bg-teagreen/10 p-4 rounded-lg border border-teagreen/30">
+                            <div class="flex justify-between text-sm text-slate mb-2">
+                                <span>${getTranslation('pickup-label')}:</span>
+                                <span class="font-bold text-midnight">${state.ride.pickup}</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-slate">
+                                <span>${getTranslation('destination-label')}:</span>
+                                <span class="font-bold text-midnight">${state.ride.drop}</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="pt-4">
+                            <button type="submit" 
+                                    class="w-full gradient-sunset text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition shadow-lg mobile-tap">
+                                <i class="fa-solid fa-paper-plane mr-2"></i>${getTranslation('confirm-send')}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+            
+            const modalContainer = document.getElementById('modal-container');
+            if (modalContainer) {
+                modalContainer.innerHTML = modalHTML;
+            }
         }
 
         async function submitRideBooking(event) {
@@ -2224,10 +2224,7 @@
             `;
             messagesDiv.appendChild(userMessageDiv);
             
-            // Clear input
             input.value = '';
-            
-            // Scroll to bottom
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             
             // Show typing indicator
@@ -2243,7 +2240,6 @@
             messagesDiv.appendChild(typingDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             
-            // Simulate AI response (in real app, integrate with AI API)
             setTimeout(() => {
                 typingDiv.remove();
                 
@@ -2275,40 +2271,41 @@
             }, 1500);
         }
 
-        // Initialize Chat Input Event Listener
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', async () => {
+            const savedLang = localStorage.getItem('gaanyogi-language') || 'en';
+            state.currentLanguage = savedLang;
+            
+            await initAuth();
+            updateAllText();
+            
+            router.navigate('home');
+            
+            // Language dropdown event listeners
+            const langBtn = document.getElementById('language-dropdown-btn');
+            const langDropdown = document.getElementById('language-dropdown');
+            
+            if (langBtn && langDropdown) {
+                langBtn.addEventListener('click', () => {
+                    langDropdown.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                        langDropdown.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Chat input enter key
             const chatInput = document.getElementById('chat-input');
             if (chatInput) {
-                chatInput.addEventListener('keypress', function(e) {
+                chatInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         handleChatSend();
                     }
                 });
             }
-        });
-
-        // Initialize Application
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Load saved language
-            const savedLang = localStorage.getItem('gaanyogi-language') || 'en';
-            state.currentLanguage = savedLang;
-            
-            // Initialize auth and UI
-            await initAuth();
-            updateAllText();
-            
-            // Start with home page
-            router.navigate('home');
-            
-            // Add event listeners for navigation
-            document.querySelectorAll('nav button, #mobile-menu button').forEach(btn => {
-                if (btn.onclick && btn.onclick.toString().includes('router.navigate')) {
-                    // Already has onclick handler
-                }
-            });
-            
-            // Initialize tooltips and other UI enhancements
-            console.log('GAANYOGI Tours & Travels initialized');
         });
 
         // Expose functions to global scope
